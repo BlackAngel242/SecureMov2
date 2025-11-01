@@ -1,15 +1,22 @@
 SecureMover Version Information
 ================================
 
-Version Actuelle : 2.0.1
-Date de Release  : 2025-01-15
-Code Name        : "Firewall" (Protection)
+Version Actuelle : 2.0.2
+Date de Release  : 2025-11-01
+Code Name        : "Firewall Plus" (Protection Améliorée)
 Statut           : Stable - Production Ready - TESTE
 
 ---
 
 Historique des Versions
 ========================
+
+v2.0.2 (2025-11-01) - "Firewall Plus"
+  - PATCH UX-002 : Verification espace disque avant deplacement
+  - PATCH BUG-003 : Support chemins longs >260 caracteres
+  - PATCH UX-008 : Mode simulation WhatIf
+  - Ameliorations UX et stabilite
+  - Correction 3 bugs P1 critiques
 
 v2.0.1 (2025-01-15) - "Firewall Patch 1"
   - CORRECTION CRITIQUE : Encodage emojis
@@ -51,9 +58,9 @@ Informations Techniques
 Langage          : PowerShell 5.1+
 Plateforme       : Windows 10/11
 Architecture     : Modulaire fonctionnelle
-Lignes de Code   : 1698
-Fonctions        : 24
-Documentation    : 3000+ lignes
+Lignes de Code   : 1849
+Fonctions        : 27
+Documentation    : 3500+ lignes
 Langues UI       : Francais, Anglais
 
 ---

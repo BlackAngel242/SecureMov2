@@ -17,18 +17,18 @@
 
 ## 🟠 Bugs Majeurs (P1) - À CORRIGER IMMÉDIATEMENT
 
-**Nombre** : 6
+**Nombre** : 3 (6 initiaux, 3 résolus en v2.0.2)
 
 ---
 
-### BUG-003 : Chemins >260 caracteres non supportes
+### BUG-003 : Chemins >260 caracteres non supportes ✅
 
 **Priorite** : P1 (MAJEUR)
-**Status** : IDENTIFIE → EN COURS DE CORRECTION
+**Status** : RESOLU (v2.0.2 - 2025-11-01)
 **Reporter** : Sarah Chen (QA)
 **Date** : 2025-01-15
 **Assigne a** : Lead Developer
-**ETA** : v2.0.2 (cette semaine)
+**Resolu par** : PATCH BUG-003 (v2.0.2)
 
 **Description** :
 Robocopy echoue sur les fichiers avec chemins >260 caracteres.
@@ -102,14 +102,14 @@ finally {
 
 ---
 
-### UX-002 : Pas de verification espace disque disponible ⚠️⚠️
+### UX-002 : Pas de verification espace disque disponible ✅
 
 **Priorite** : P1 (MAJEUR) - CRITIQUE
-**Status** : NOUVEAU (2025-11-01)
+**Status** : RESOLU (v2.0.2 - 2025-11-01)
 **Reporter** : Bug Manager (Analyse PSScriptAnalyzer)
 **Date** : 2025-11-01
 **Assigne a** : Lead Developer
-**ETA** : v2.0.2 (cette semaine)
+**Resolu par** : PATCH UX-002 (v2.0.2)
 
 **Description** :
 Le script ne vérifie pas si la destination a assez d'espace disque disponible avant
@@ -156,14 +156,14 @@ if ($sourceSize -gt $availableSpace) {
 
 ---
 
-### UX-008 : Pas de mode simulation (WhatIf)
+### UX-008 : Pas de mode simulation (WhatIf) ✅
 
 **Priorite** : P1 (MAJEUR)
-**Status** : NOUVEAU (2025-11-01)
+**Status** : RESOLU (v2.0.2 - 2025-11-01)
 **Reporter** : Bug Manager
 **Date** : 2025-11-01
 **Assigne a** : Lead Developer
-**ETA** : v2.0.2
+**Resolu par** : PATCH UX-008 (v2.0.2)
 
 **Description** :
 Impossible de simuler l'opération sans l'exécuter réellement.

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    SecureMover v2.0.2 - Déplace les dossiers utilisateur Windows vers une autre partition.
+    SecureMover v2.0 - Déplace les dossiers utilisateur Windows vers une autre partition.
 
 .DESCRIPTION
     Ce script guide l'utilisateur pour déplacer, restaurer ou sauvegarder ses dossiers personnels
@@ -10,16 +10,12 @@
 .PARAMETER NoExit
     Empêche la fermeture automatique du script à la fin.
 
-.PARAMETER WhatIf
-    Mode simulation - Affiche ce qui serait fait sans effectuer de modifications réelles.
-
 .AUTHOR
     DrSmoke "un mbokatier bien engagé" & Assistant IA
 #>
 
 param(
-    [switch]$NoExit,
-    [switch]$WhatIf
+    [switch]$NoExit
 )
 
 # -----------------------------------------------------------------------------------
@@ -1110,163 +1106,6 @@ function Get-MenuChoice {
 }
 
 # -----------------------------------------------------------------------------------
-# --- FONCTIONS UTILITAIRES PATCH v2.0.2
-# -----------------------------------------------------------------------------------
-
-function Get-FolderSize {
-    <#
-    .SYNOPSIS
-        Calcule la taille totale d'un dossier et ses sous-dossiers.
-    .DESCRIPTION
-        Parcourt récursivement le dossier et additionne la taille de tous les fichiers.
-    .PARAMETER Path
-        Chemin du dossier à mesurer
-    .OUTPUTS
-        Taille en octets (Int64)
-    #>
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$Path
-    )
-
-    try {
-        Write-StatusMessage "Calcul de la taille du profil..." "Progress"
-
-        $size = (Get-ChildItem -Path $Path -Recurse -File -ErrorAction SilentlyContinue |
-                 Measure-Object -Property Length -Sum).Sum
-
-        if ($null -eq $size) {
-            $size = 0
-        }
-
-        Write-StatusMessage "Taille calculée : $([Math]::Round($size / 1GB, 2)) GB" "Info"
-        return $size
-    }
-    catch {
-        Write-StatusMessage "Erreur lors du calcul de taille : $($_.Exception.Message)" "Warning"
-        return 0
-    }
-}
-
-function Test-AvailableSpace {
-    <#
-    .SYNOPSIS
-        Vérifie si assez d'espace disque disponible.
-    .PARAMETER SourceSize
-        Taille des données à déplacer (octets)
-    .PARAMETER DestinationDrive
-        Lettre du disque de destination (ex: "D")
-    .OUTPUTS
-        $true si assez d'espace, $false sinon
-    #>
-    param(
-        [Parameter(Mandatory=$true)]
-        [int64]$SourceSize,
-
-        [Parameter(Mandatory=$true)]
-        [string]$DestinationDrive
-    )
-
-    try {
-        # Obtenir l'espace disponible sur le disque
-        $destDrive = Get-PSDrive -Name $DestinationDrive[0] -PSProvider FileSystem -ErrorAction Stop
-        $availableSpace = $destDrive.Free
-        $totalSpace = $destDrive.Used + $destDrive.Free
-
-        # Calculer pourcentage d'espace libre après opération
-        $spaceAfterMove = $availableSpace - $SourceSize
-        $percentFreeAfter = ($spaceAfterMove / $totalSpace) * 100
-
-        # Afficher statistiques
-        Show-InfoBox -Lines @(
-            "VÉRIFICATION DE L'ESPACE DISQUE",
-            "",
-            "Disque destination  : ${DestinationDrive}:\",
-            "Taille du profil    : $([Math]::Round($SourceSize / 1GB, 2)) GB",
-            "Espace disponible   : $([Math]::Round($availableSpace / 1GB, 2)) GB",
-            "Espace après copie  : $([Math]::Round($spaceAfterMove / 1GB, 2)) GB",
-            "% libre après       : $([Math]::Round($percentFreeAfter, 1))%"
-        ) -BorderColor "Cyan"
-
-        # VÉRIFICATION 1 : Espace insuffisant
-        if ($SourceSize -gt $availableSpace) {
-            $missingSpace = $SourceSize - $availableSpace
-            Show-InfoBox -Lines @(
-                "ERREUR : ESPACE DISQUE INSUFFISANT",
-                "",
-                "Taille du profil    : $([Math]::Round($SourceSize / 1GB, 2)) GB",
-                "Espace disponible   : $([Math]::Round($availableSpace / 1GB, 2)) GB",
-                "Espace manquant     : $([Math]::Round($missingSpace / 1GB, 2)) GB",
-                "",
-                "SOLUTION :",
-                "1. Libérez au moins $([Math]::Round($missingSpace / 1GB, 2)) GB sur le disque ${DestinationDrive}:\",
-                "2. Ou choisissez un autre disque de destination",
-                "3. Ou supprimez des fichiers inutiles du profil avant de déplacer"
-            ) -BorderColor "Red"
-            return $false
-        }
-
-        # VÉRIFICATION 2 : Avertissement si < 10% libre après
-        if ($percentFreeAfter -lt 10) {
-            Write-Host ""
-            Write-StatusMessage "AVERTISSEMENT : Moins de 10% d'espace libre après l'opération ($([Math]::Round($percentFreeAfter, 1))%)" "Warning"
-            Write-Host "Il est recommandé de garder au moins 10-15% d'espace libre pour les performances." -ForegroundColor Yellow
-            Write-Host ""
-
-            $continue = Read-Host "Voulez-vous continuer quand même ? (O/N)"
-            if ($continue -ne 'O') {
-                Write-StatusMessage "Opération annulée par l'utilisateur." "Info"
-                return $false
-            }
-        }
-        # VÉRIFICATION 3 : Avertissement si < 20% libre après
-        elseif ($percentFreeAfter -lt 20) {
-            Write-StatusMessage "Note : Il restera $([Math]::Round($percentFreeAfter, 1))% d'espace libre après l'opération." "Info"
-        }
-
-        Write-StatusMessage "Vérification espace : OK" "Success"
-        return $true
-    }
-    catch {
-        Write-StatusMessage "Erreur lors de la vérification d'espace : $($_.Exception.Message)" "Error"
-        return $false
-    }
-}
-
-function Convert-ToLongPath {
-    <#
-    .SYNOPSIS
-        Convertit un chemin en format long path pour Windows
-    .PARAMETER Path
-        Chemin à convertir
-    .OUTPUTS
-        Chemin avec préfixe \\?\ si nécessaire
-    #>
-    param([string]$Path)
-
-    # Si le chemin commence déjà par \\?\, ne rien faire
-    if ($Path.StartsWith('\\?\')) {
-        return $Path
-    }
-
-    # Convertir chemin relatif en absolu
-    if (-not [System.IO.Path]::IsPathRooted($Path)) {
-        $Path = [System.IO.Path]::GetFullPath($Path)
-    }
-
-    # Ajouter le préfixe pour chemins longs
-    # Attention : robocopy n'aime pas \\?\UNC\, donc garder UNC paths normaux
-    if ($Path.StartsWith('\\')) {
-        # Chemin UNC (réseau), ne pas modifier
-        return $Path
-    }
-    else {
-        # Chemin local, ajouter \\?\
-        return "\\?\$Path"
-    }
-}
-
-# -----------------------------------------------------------------------------------
 # --- FONCTIONS DES OPTIONS DU MENU
 # -----------------------------------------------------------------------------------
 
@@ -1308,16 +1147,6 @@ function Move-UserProfile {
         return
     }
 
-    # Vérification de l'espace disque disponible (PATCH UX-002)
-    if (-not $WhatIf) {
-        Write-StatusMessage "Vérification de l'espace disque disponible..." "Progress"
-        $profileSize = Get-FolderSize -Path $selectedProfile.Path
-        if (-not (Test-AvailableSpace -SourceSize $profileSize -DestinationDrive $destinationDrive)) {
-            Write-StatusMessage "Opération annulée : espace disque insuffisant." "Error"
-            return
-        }
-    }
-
     # Sauvegarde du registre avec animation
     Write-StatusMessage "Création de la sauvegarde du registre..." "Progress"
     Show-LoadingAnimation -Message "Sauvegarde du registre" -Duration 2
@@ -1343,38 +1172,6 @@ function Move-UserProfile {
         $registryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
         $movedFolders = @()
 
-        # Mode simulation WhatIf (PATCH UX-008)
-        if ($WhatIf) {
-            $folderList = $foldersToMove.Keys | ForEach-Object { "  • $_" }
-            Show-InfoBox -Lines (@(
-                "MODE SIMULATION (WhatIf) ACTIVÉ",
-                "",
-                "Les opérations suivantes SERAIENT effectuées :",
-                "",
-                "PROFIL À DÉPLACER :",
-                "  Utilisateur : $($selectedProfile.Name)",
-                "  Source      : $($selectedProfile.Path)",
-                "  Destination : $destinationPath",
-                "",
-                "DOSSIERS À DÉPLACER :"
-            ) + $folderList + @(
-                "",
-                "ACTIONS QUI SERAIENT EFFECTUÉES :",
-                "  1. Création sauvegarde registre",
-                "  2. Création dossier destination : $destinationPath",
-                "  3. Déplacement de chaque dossier avec robocopy",
-                "  4. Mise à jour registre Windows",
-                "  5. Notification système",
-                "",
-                "AUCUNE MODIFICATION N'A ÉTÉ EFFECTUÉE (mode simulation)"
-            )) -BorderColor "Yellow"
-
-            Write-StatusMessage "Mode WhatIf : Simulation terminée sans modifications" "Info"
-            Write-Host ""
-            Read-Host "Appuyez sur Entrée pour revenir au menu principal"
-            return
-        }
-
         # Boucle sur chaque dossier pour le déplacer avec barre de progression stylisée
         $i = 1
         foreach ($folder in $foldersToMove.Keys) {
@@ -1386,8 +1183,8 @@ function Move-UserProfile {
             if (Test-Path -Path $sourceFullPath) {
                 Write-StatusMessage "Déplacement de $folder vers $destFullPath" "Progress"
 
-                # Utilisation de Robocopy pour un déplacement robuste (PATCH BUG-003: Support chemins longs)
-                $robocopyResult = robocopy (Convert-ToLongPath $sourceFullPath) (Convert-ToLongPath $destFullPath) /E /MOVE /NJH /NJS
+                # Utilisation de Robocopy pour un déplacement robuste
+                $robocopyResult = robocopy $sourceFullPath $destFullPath /E /MOVE /NJH /NJS
                 $exitCode = $LASTEXITCODE
 
                 if ($exitCode -le 7) {
@@ -1531,38 +1328,6 @@ function Restore-UserProfile {
         return
     }
 
-    # Mode simulation WhatIf (PATCH UX-008)
-    if ($WhatIf) {
-        $foldersToRestore = @('Desktop', 'Documents', 'Downloads', 'Music', 'Pictures', 'Videos')
-        $folderList = $foldersToRestore | ForEach-Object { "  • $_" }
-        Show-InfoBox -Lines (@(
-            "MODE SIMULATION (WhatIf) ACTIVÉ",
-            "",
-            "Les opérations suivantes SERAIENT effectuées :",
-            "",
-            "PROFIL À RESTAURER :",
-            "  Utilisateur : $($selectedProfile.Name)",
-            "  Source      : $($selectedProfile.MovedPath)",
-            "  Destination : $($selectedProfile.OriginalPath)",
-            "",
-            "DOSSIERS À RESTAURER :"
-        ) + $folderList + @(
-            "",
-            "ACTIONS QUI SERAIENT EFFECTUÉES :",
-            "  1. Création dossier destination : $($selectedProfile.OriginalPath)",
-            "  2. Restauration de chaque dossier avec robocopy",
-            "  3. Restauration registre depuis sauvegarde",
-            "  4. Notification système",
-            "",
-            "AUCUNE MODIFICATION N'A ÉTÉ EFFECTUÉE (mode simulation)"
-        )) -BorderColor "Yellow"
-
-        Write-StatusMessage "Mode WhatIf : Simulation terminée sans modifications" "Info"
-        Write-Host ""
-        Read-Host "Appuyez sur Entrée pour revenir au menu principal"
-        return
-    }
-
     try {
         # Création du dossier d'origine s'il n'existe pas
         if (-not (Test-Path -Path $selectedProfile.OriginalPath)) {
@@ -1583,8 +1348,7 @@ function Restore-UserProfile {
 
             if (Test-Path -Path $sourcePath) {
                 Write-StatusMessage "Restauration de $folder..." "Progress"
-                # PATCH BUG-003: Support chemins longs
-                $robocopyResult = robocopy (Convert-ToLongPath $sourcePath) (Convert-ToLongPath $destPath) /E /MOVE /NJH /NJS
+                $robocopyResult = robocopy $sourcePath $destPath /E /MOVE /NJH /NJS
                 $exitCode = $LASTEXITCODE
 
                 if (Handle-RobocopyResult -ExitCode $exitCode -FolderName $folder -Operation "restauration") {
@@ -1707,37 +1471,6 @@ function Backup-UserProfile {
         return
     }
 
-    # Mode simulation WhatIf (PATCH UX-008)
-    if ($WhatIf) {
-        $folderList = $foldersToBackup | ForEach-Object { "  • $_" }
-        Show-InfoBox -Lines (@(
-            "MODE SIMULATION (WhatIf) ACTIVÉ",
-            "",
-            "Les opérations suivantes SERAIENT effectuées :",
-            "",
-            "PROFIL À SAUVEGARDER :",
-            "  Utilisateur : $($selectedProfile.Name)",
-            "  Source      : $($selectedProfile.Path)",
-            "  Destination : $destinationPath",
-            "  Taille      : $totalSizeGB GB",
-            "",
-            "DOSSIERS À SAUVEGARDER :"
-        ) + $folderList + @(
-            "",
-            "ACTIONS QUI SERAIENT EFFECTUÉES :",
-            "  1. Création dossier de sauvegarde : $destinationPath",
-            "  2. Copie de chaque dossier avec robocopy (mode COPIE, pas de suppression)",
-            "  3. Création fichier de métadonnées",
-            "",
-            "AUCUNE MODIFICATION N'A ÉTÉ EFFECTUÉE (mode simulation)"
-        )) -BorderColor "Yellow"
-
-        Write-StatusMessage "Mode WhatIf : Simulation terminée sans modifications" "Info"
-        Write-Host ""
-        Read-Host "Appuyez sur Entrée pour revenir au menu principal"
-        return
-    }
-
     try {
         # Création du dossier de destination
         Write-StatusMessage "Création du dossier de sauvegarde..." "Progress"
@@ -1756,8 +1489,8 @@ function Backup-UserProfile {
             if (Test-Path -Path $sourcePath) {
                 Write-StatusMessage "Sauvegarde de $folder..." "Progress"
 
-                # Utilisation de robocopy en mode copie (pas de déplacement) - PATCH BUG-003: Support chemins longs
-                $robocopyResult = robocopy (Convert-ToLongPath $sourcePath) (Convert-ToLongPath $destPath) /E /COPY:DAT /R:3 /W:1 /NJH /NJS
+                # Utilisation de robocopy en mode copie (pas de déplacement)
+                $robocopyResult = robocopy $sourcePath $destPath /E /COPY:DAT /R:3 /W:1 /NJH /NJS
                 $exitCode = $LASTEXITCODE
 
                 if (Handle-RobocopyResult -ExitCode $exitCode -FolderName $folder -Operation "sauvegarde") {

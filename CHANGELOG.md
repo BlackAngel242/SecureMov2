@@ -18,6 +18,45 @@ et ce projet respecte le [Versionnage Semantique](https://semver.org/lang/fr/).
 
 ---
 
+## [2.0.2] - 2025-11-01 (PATCH RELEASE)
+
+### Ajoute
+- **PATCH UX-002** : Verification de l'espace disque avant deplacement
+  - Nouvelle fonction `Get-FolderSize` pour calculer la taille du profil
+  - Nouvelle fonction `Test-AvailableSpace` pour verifier l'espace disponible
+  - Affichage des statistiques d'espace disque (taille profil, espace libre, % restant)
+  - Avertissement si < 10% d'espace libre apres operation
+  - Blocage automatique si espace insuffisant avec suggestions
+
+- **PATCH BUG-003** : Support des chemins longs (>260 caracteres)
+  - Nouvelle fonction `Convert-ToLongPath` utilisant le prefixe `\\?\`
+  - Modification de tous les appels robocopy pour supporter chemins longs
+  - Compatible avec chemins UNC (reseau)
+  - Permet deplacement de profils avec hierarchies profondes
+
+- **PATCH UX-008** : Mode simulation WhatIf
+  - Nouveau parametre `-WhatIf` pour simuler operations sans modifications
+  - Affichage detaille des actions qui seraient effectuees
+  - Mode simulation disponible pour : Move, Restore, Backup
+  - Permet de tester avant execution reelle
+
+### Modifie
+- Script passe de 1698 a 1849 lignes de code
+- Nombre de fonctions passe de 24 a 27
+- Amelioration generale de la robustesse et UX
+
+### Corrige
+- **BUG UX-002** : Deplacement sans verification espace disque (P1 - MAJEUR)
+- **BUG BUG-003** : Echec avec chemins >260 caracteres (P1 - MAJEUR)
+- **BUG UX-008** : Impossibilite de tester sans modifier systeme (P1 - MAJEUR)
+
+### Technique
+- 3 nouvelles fonctions utilitaires (Get-FolderSize, Test-AvailableSpace, Convert-ToLongPath)
+- Validation syntaxe PowerShell confirmee
+- Code commente avec references aux patches
+
+---
+
 ## [2.0.1] - 2025-01-15 (PATCH RELEASE)
 
 ### Corrige
