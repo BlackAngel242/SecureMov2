@@ -30,7 +30,7 @@ $scriptPath = $PSScriptRoot
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="SecureMover v2.0.2 - Interface Graphique"
+    Title="SecureMover v2.0.2 - by DrSmoke"
     Height="720" Width="920"
     WindowStartupLocation="CenterScreen"
     ResizeMode="CanMinimize"
