@@ -1,0 +1,230 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         SecureMover GUI v2.0.2                                ║
+║                    DESIGN INTERFACE - THÈME SOMBRE                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│                           SecureMover                                        │
+│               Déplacement de Profils Utilisateurs Windows                   │
+│                     v2.0.2 GUI - Interface Graphique                         │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  1. SÉLECTION DU PROFIL                                                │ │
+│  │                                                                        │ │
+│  │  ┌──────────────────────────────────────────────────────────────────┐ │ │
+│  │  │ DrSmoke (C:\Users\DrSmoke)                            ▼         │ │ │
+│  │  └──────────────────────────────────────────────────────────────────┘ │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  2. DISQUE DE DESTINATION                                              │ │
+│  │                                                                        │ │
+│  │  ┌──────────────────────────────────────────────────────────────────┐ │ │
+│  │  │ D:\ - 250.5 GB libre / 500 GB (50.1% libre)        ▼           │ │ │
+│  │  └──────────────────────────────────────────────────────────────────┘ │ │
+│  │  Espace libre: 250.5 GB (50.1% disponible) 🟢                          │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐                 │ │
+│  │  │ DÉPLACER │ │RESTAURER │ │SAUVEGARDER│ │ SIMULER │                 │ │
+│  │  │   🔵    │ │   🟢    │ │   🟡    │ │   ⚪    │                 │ │
+│  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘                 │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  Opération en cours...                                                 │ │
+│  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░  75%                │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  JOURNAL D'ACTIVITÉ                                                    │ │
+│  │                                                                        │ │
+│  │  12:34:56 [INFO] Initialisation de l'interface...                     │ │
+│  │  12:34:57 [OK] Profils trouvés: 3                                     │ │
+│  │  12:34:57 [OK] Disques disponibles: 2                                 │ │
+│  │  12:34:57 [OK] Interface prête. Vous pouvez commencer.                │ │
+│  │  12:35:10 [INFO] === DÉPLACEMENT DE PROFIL ===                        │ │
+│  │  12:35:10 [INFO] Opération démarrée...                                │ │
+│  │  12:35:15 [OK] Vérification espace disque : OK                        │ │
+│  │  12:35:20 [INFO] Sauvegarde registre créée                            │ │
+│  │  12:35:25 [INFO] Déplacement Desktop...                               │ │
+│  │  12:35:30 [INFO] Déplacement Documents...                             │ │
+│  │  12:35:40 [OK] Déplacement terminé avec succès !                      │ │
+│  │                                                                        │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  SecureMover v2.0.2 GUI  •  MIT License  •  DrSmoke 2025                    │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+                             PALETTE DE COULEURS
+═══════════════════════════════════════════════════════════════════════════════
+
+FOND PRINCIPAL         : #1E1E1E (Gris très foncé / Presque noir)
+FOND SECTIONS          : #2D2D30 (Gris foncé)
+FOND INPUTS            : #252526 (Gris très foncé)
+BORDURES               : #3F3F46 (Gris moyen foncé)
+
+TEXTE PRINCIPAL        : #FFFFFF (Blanc pur)
+TEXTE SECONDAIRE       : #A0A0A0 (Gris clair)
+TEXTE FOOTER           : #606060 (Gris moyen)
+
+BOUTON DÉPLACER        : #0E639C (Bleu accent) → Hover: #1177BB
+BOUTON RESTAURER       : #2D7230 (Vert) → Hover: #3D8F42
+BOUTON SAUVEGARDER     : #8F6B2D (Orange/Jaune) → Hover: #AF8B3D
+BOUTON SIMULER         : #2D2D30 (Gris neutre) → Hover: #3E3E42
+
+BARRE PROGRESSION      : #0E639C (Bleu accent)
+
+INDICATEUR ESPACE
+  Excellent (>30%)     : #50FA7B (Vert vif)
+  Attention (15-30%)   : #FFB86C (Orange)
+  Critique (<15%)      : #FF6B6B (Rouge)
+
+═══════════════════════════════════════════════════════════════════════════════
+                            CARACTÉRISTIQUES WPF
+═══════════════════════════════════════════════════════════════════════════════
+
+FENÊTRE
+  Dimensions           : 900x700 pixels
+  Position             : Centre écran
+  Redimensionnable     : Non (CanMinimize uniquement)
+  Titre                : "SecureMover v2.0.2 - Interface Graphique"
+
+BOUTONS
+  Style                : Coins arrondis (4px)
+  Effet hover          : Éclaircissement du fond
+  Curseur              : Main (pointer)
+  Padding              : 20px horizontal, 10px vertical
+  Police               : 14pt, SemiBold
+
+COMBOBOXES
+  Hauteur              : 35px
+  Police               : 13pt
+  Style                : Thème sombre personnalisé
+
+BARRE PROGRESSION
+  Hauteur              : 10px
+  Min/Max              : 0-100%
+  Animation            : Fluide
+  Visibilité           : Masquée par défaut, affichée pendant opérations
+
+JOURNAL
+  Police               : Consolas (monospace)
+  Taille               : 11pt
+  Défilement           : Automatique vers le bas
+  Format               : HH:mm:ss [TYPE] Message
+
+═══════════════════════════════════════════════════════════════════════════════
+                               INTERACTIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+DÉMARRAGE
+  1. Chargement automatique des profils utilisateurs
+  2. Chargement automatique des disques disponibles
+  3. Sélection par défaut du premier élément de chaque liste
+  4. Messages de log confirmant initialisation
+
+SÉLECTION DISQUE
+  → Mise à jour immédiate de l'indicateur d'espace
+  → Changement de couleur selon % disponible
+  → Calcul temps réel de l'espace libre
+
+BOUTON DÉPLACER
+  → Vérification sélections (profil + disque)
+  → Boîte de confirmation avec avertissement
+  → Affichage barre progression
+  → Logs détaillés de chaque étape
+  → Message de succès final
+  → Recommandation redémarrage
+
+BOUTON SIMULER (WhatIf)
+  → Vérification sélections
+  → Affichage simulation dans logs
+  → Liste des actions qui seraient effectuées
+  → Message clair "AUCUNE MODIFICATION"
+  → Boîte d'information finale
+
+BOUTONS RESTAURER/SAUVEGARDER
+  → Message "En développement"
+  → Promesse version future
+
+═══════════════════════════════════════════════════════════════════════════════
+                            STRUCTURE XAML
+═══════════════════════════════════════════════════════════════════════════════
+
+<Window>
+  <Window.Resources>
+    - ModernButton (style de base)
+    - AccentButton (bleu)
+    - SuccessButton (vert)
+    - WarningButton (orange)
+  </Window.Resources>
+
+  <Grid> (7 lignes)
+    Row 0 : Header (Titre + Sous-titres)
+    Row 1 : Sélection Profil
+    Row 2 : Sélection Disque + Indicateur
+    Row 3 : Boutons Actions (Grid 4 colonnes)
+    Row 4 : Barre Progression (masquée par défaut)
+    Row 5 : Journal (ScrollViewer + TextBlock)
+    Row 6 : Footer (Infos version)
+  </Grid>
+</Window>
+
+═══════════════════════════════════════════════════════════════════════════════
+                          FONCTIONS POWERSHELL
+═══════════════════════════════════════════════════════════════════════════════
+
+Write-GUILog          : Ajoute message au journal avec timestamp et type
+Show-Progress         : Affiche barre progression avec % et status
+Hide-Progress         : Masque barre progression
+Get-UserProfiles      : Récupère liste profils C:\Users (exclut systèmes)
+Get-AvailableDrives   : Récupère disques disponibles avec stats espace
+
+EVENT HANDLERS
+  MoveButton_Click              : Logique déplacement profil
+  RestoreButton_Click           : Message "en développement"
+  BackupButton_Click            : Message "en développement"
+  WhatIfButton_Click            : Simulation WhatIf
+  DriveComboBox_SelectionChanged : Mise à jour indicateur espace
+
+Initialize-GUI        : Chargement initial données (profils + disques)
+
+═══════════════════════════════════════════════════════════════════════════════
+                               NOTES DESIGN
+═══════════════════════════════════════════════════════════════════════════════
+
+PHILOSOPHIE : Minimaliste et Fonctionnel
+  - Pas de décorations inutiles
+  - Chaque élément a un but clair
+  - Hiérarchie visuelle claire (numérotation 1, 2)
+  - Espacement généreux pour respiration
+  - Feedback immédiat de toute action
+
+INSPIRATION THÈME
+  - Visual Studio Code (Dark Theme)
+  - Windows Terminal (Dark)
+  - Modern Fluent Design
+  - Material Design (adapté)
+
+ACCESSIBILITÉ
+  - Contrastes élevés (texte blanc sur fond sombre)
+  - Tailles de police lisibles (11-32pt)
+  - Boutons suffisamment grands (45px hauteur)
+  - Curseurs appropriés (main sur boutons)
+  - Messages clairs et explicites
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Design créé le : 2025-11-01
+Auteur          : DrSmoke avec Claude (Anthropic)
+Version         : 2.0.2-GUI
+Statut          : Production Ready ✅
+
+═══════════════════════════════════════════════════════════════════════════════
