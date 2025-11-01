@@ -1,0 +1,122 @@
+SecureMover Version Information
+================================
+
+Version Actuelle : 2.0.1
+Date de Release  : 2025-01-15
+Code Name        : "Firewall" (Protection)
+Statut           : Stable - Production Ready - TESTE
+
+---
+
+Historique des Versions
+========================
+
+v2.0.1 (2025-01-15) - "Firewall Patch 1"
+  - CORRECTION CRITIQUE : Encodage emojis
+  - Script demarre correctement
+  - Icons ASCII pour compatibilite universelle
+  - Teste et fonctionnel
+
+v2.0.0 (2025-01-15) - "Firewall"
+  - Interface multilingue complete
+  - Menu interactif 5 options
+  - Restauration et sauvegarde
+  - Documentation professionnelle
+
+v1.0.0 (2024-08-04) - "Foundation"
+  - Version initiale MVP
+  - Deplacement de base
+  - Interface CLI simple
+
+v0.1.0 (2024-08-03) - "Blueprint"
+  - Conception initiale
+  - PRD et roadmap
+
+---
+
+Prochaine Version Prevue
+=========================
+
+v2.1.0 (Q2 2025) - "Guardian"
+  - Selection personnalisee
+  - Mode silencieux
+  - Verification integrite
+  - Support chemins longs
+
+---
+
+Informations Techniques
+========================
+
+Langage          : PowerShell 5.1+
+Plateforme       : Windows 10/11
+Architecture     : Modulaire fonctionnelle
+Lignes de Code   : 1698
+Fonctions        : 24
+Documentation    : 3000+ lignes
+Langues UI       : Francais, Anglais
+
+---
+
+Compatibilite
+=============
+
+Windows Versions :
+  - Windows 10 21H2+     [Teste]
+  - Windows 11 21H2+     [Teste]
+  - Windows 7/8.1 SP1+   [Supporte]
+
+PowerShell Versions :
+  - PowerShell 5.1       [Recommande]
+  - PowerShell 7.x       [Compatible]
+
+Terminals :
+  - Windows Terminal     [Optimal]
+  - Console PowerShell   [Compatible]
+  - ConEmu              [Compatible]
+  - VS Code Integrated   [Compatible]
+
+---
+
+Checksum (SHA256)
+==================
+
+Date de Generation : 2025-11-01
+
+SecureMover.ps1 : e63a33ff972fbc4f8910d41ac664405072b1369e2aa514fd731d5d465632b7b2
+README.md       : 20b7a8b2e927ea6d922fbac353ec0284dfecd9343dc14cf0b3a2e505c0d0086d
+LICENSE         : c4b87c508040516d59da744133fb68b77a5138bfe7a8bb5a9f6887f09005e1ba
+QUICKSTART.md   : c513e992e4e2c2344d2b4dd482f71a153ede52d368b115ac6aebeaad911b8820
+
+Voir fichier CHECKSUMS.txt pour plus de details
+
+---
+
+Auteur
+======
+
+DrSmoke "un mbokatier bien engage"
+Avec la collaboration de l'Assistant IA
+
+---
+
+Licence
+=======
+
+MIT License - Voir fichier LICENSE pour details complets
+
+Copyright (c) 2025 DrSmoke
+
+---
+
+Liens Utiles
+============
+
+GitHub          : https://github.com/DrSmoke/SecureMover
+Documentation   : https://github.com/DrSmoke/SecureMover#readme
+Issues/Bugs     : https://github.com/DrSmoke/SecureMover/issues
+Changelog       : https://github.com/DrSmoke/SecureMover/blob/main/CHANGELOG.md
+
+---
+
+Derniere Mise a Jour : 2025-11-01 12:30:00 UTC

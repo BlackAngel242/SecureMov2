@@ -1,0 +1,259 @@
+﻿# Projet : SecureMover 🛡️
+
+**Déplaceur de Données Utilisateur Sécurisé**
+
+Un script PowerShell pour déplacer de manière sûre et interactive les dossiers utilisateurs Windows (Documents, Images, etc.) vers une autre partition afin de protéger les données contre les défaillances du système.
+
+## 1\. Vision du Produit et Feuille de Route (PRD)
+
+### Objectif Principal
+
+Permettre à un utilisateur, même non technique, de sécuriser ses fichiers personnels en les isolant du système d'exploitation. Le script doit être sûr, clair et inspirer la confiance.
+
+### User Story
+
+> **En tant qu'** utilisateur de Windows,
+> **Je veux** un outil simple qui me guide pour déplacer mes dossiers personnels sur une autre partition,
+> **Afin de** ne pas perdre mes données si je dois réinstaller Windows ou si mon système plante.
+
+### Fonctionnalités Clés (v1.0)
+
+  * **Interface en Ligne de Commande (CLI) Claire :** Guidage de l'utilisateur avec des textes en couleur.
+  * **Vérification des Privilèges :** Le script refuse de se lancer sans les droits d'administrateur.
+  * **Interaction et Validation :** Le script pose des questions et demande toujours une confirmation avant d'agir.
+  * **Détection Automatique :** Détecte les partitions disponibles et le nom d'utilisateur.
+  * **Déplacement Robuste :** Utilise `Robocopy` pour un déplacement fiable des fichiers.
+  * **Mise à Jour Automatique du Système :** Modifie le Registre Windows pour que le changement soit permanent.
+  * **Animations Simples :** Affiche une animation ("spinner") pour montrer que le script travaille.
+  * **Rapport Final :** Indique clairement la fin de l'opération et la nécessité de redémarrer.
+
+### Feuille de Route
+
+| Version | Statut | Objectifs |
+| :--- | :--- | :--- |
+| **v1.0** | **Actuel** | **Produit Minimum Viable (MVP) :** Toutes les fonctionnalités clés listées ci-dessus. |
+| **v1.1** | Futur | **Améliorations :** Ajout d'un fichier log pour tracer les actions, gestion d'erreurs plus détaillée. |
+| **v2.0** | Futur | **Fonctionnalités Avancées :** Option de "Rollback" (annuler les changements), interface graphique (GUI) simple. |
+
+## 2\. Technologie Adoptée
+
+  * **Langage :** **PowerShell 5.1+**
+      * **Pourquoi ?** C'est le choix parfait car il est natif à Windows, extrêmement puissant pour les tâches d'administration, capable de gérer le système de fichiers, le Registre et les processus, tout en permettant de créer des interfaces utilisateur interactives simples dans la console.
+
+## 3\. Détails Techniques Importants
+
+### a. Encodage : `UTF-8 with BOM`
+
+C'est un détail CRUCIAL. Pour que les accents et les caractères spéciaux (dans les noms d'utilisateur comme `Stéphane` ou les noms de fichiers) s'affichent correctement dans la console PowerShell, le fichier de script `.ps1` doit être enregistré avec l'encodage **UTF-8 with BOM**.
+
+**Comment faire dans Cursor (ou VS Code) :**
+
+1.  En bas à droite de l'éditeur, clique sur `UTF-8`.
+2.  Un menu s'ouvre en haut. Choisis `Save with Encoding`.
+3.  Sélectionne `UTF-8 with BOM` dans la liste.
+
+### b. "Animations" dans la Console
+
+Pour éviter qu'un utilisateur pense que le script est "gelé" pendant une longue opération, on peut simuler une animation.
+
+  * **Spinner de chargement :** Une petite fonction qui fait tourner des caractères (`|`, `/`, `-`, `\`) sur place.
+  * **Barre de progression :** La commande `Write-Progress` de PowerShell est parfaite pour montrer l'avancement d'une boucle, comme la copie de plusieurs dossiers.
+
+## 4\. Guide d'Utilisation
+
+1.  Enregistrez le code ci-dessous dans un fichier nommé `SecureMover.ps1` (en utilisant l'encodage `UTF-8 with BOM`).
+2.  Faites un clic droit sur le fichier `SecureMover.ps1`.
+3.  Cliquez sur **"Exécuter avec PowerShell"**. Si vous n'avez pas l'option, ouvrez PowerShell en tant qu'administrateur et naviguez jusqu'au dossier du script pour le lancer.
+4.  Suivez les instructions à l'écran.
+
+## 5\. Le Code Complet (v1.0)
+
+```powershell
+<#
+.SYNOPSIS
+    SecureMover v1.0 - Déplace les dossiers utilisateur Windows vers une autre partition.
+
+.DESCRIPTION
+    Ce script guide l'utilisateur pour déplacer ses dossiers personnels (Documents, Bureau, etc.)
+    de manière sécurisée. Il vérifie les droits admin, demande confirmation, déplace les
+    fichiers et met à jour le Registre Windows.
+
+.AUTHOR
+    Assistant au Brainstorming & l'Utilisateur
+#>
+
+# -----------------------------------------------------------------------------------
+# --- PHASE 0 : VÉRIFICATION DES PRÉREQUIS ET FONCTIONS UTILITAIRES
+# -----------------------------------------------------------------------------------
+
+# Fonction pour vérifier si le script est lancé en tant qu'administrateur
+function Test-AdminPrivileges {
+    try {
+        $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+        $principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
+        return $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+    }
+    catch {
+        Write-Warning "Impossible de vérifier les privilèges administrateur."
+        return $false
+    }
+}
+
+# Fonction pour l'animation "spinner"
+function Start-Spinner {
+    $spinner = "|", "/", "-", "\"
+    $counter = 0
+    # $global:SpinnerActive est une variable globale pour contrôler l'arrêt du spinner
+    while ($global:SpinnerActive) {
+        Write-Host -NoNewline "`r$($spinner[$counter])... "
+        $counter = ($counter + 1) % 4
+        Start-Sleep -Milliseconds 150
+    }
+    Write-Host "`r" # Nettoie la ligne
+}
+
+# --- Vérification initiale ---
+if (-not (Test-AdminPrivileges)) {
+    Write-Host "ERREUR : Ce script doit être exécuté avec les privilèges d'administrateur." -ForegroundColor Red
+    Write-Host "Veuillez faire un clic droit sur le script et choisir 'Exécuter en tant qu'administrateur'." -ForegroundColor Yellow
+    Start-Sleep -Seconds 10
+    exit
+}
+
+Clear-Host
+
+# -----------------------------------------------------------------------------------
+# --- PHASE 1 : ACCUEIL ET INTERACTION UTILISATEUR
+# -----------------------------------------------------------------------------------
+
+Write-Host "================================================================" -ForegroundColor Cyan
+Write-Host "🛡️  Bienvenue dans SecureMover v1.0 🛡️" -ForegroundColor Cyan
+Write-Host "Cet outil va vous aider à déplacer vos données en toute sécurité." -ForegroundColor Cyan
+Write-Host "================================================================"
+Write-Host
+
+Write-Host "⚠️  AVERTISSEMENT : Ce processus modifiera la structure de vos fichiers." -ForegroundColor Yellow
+Write-Host "   Il est recommandé de fermer toutes vos applications avant de continuer." -ForegroundColor Yellow
+$confirmation = Read-Host "Êtes-vous prêt à commencer ? (Entrez O pour Oui, N pour Non)"
+
+if ($confirmation -ne 'O') {
+    Write-Host "Opération annulée par l'utilisateur." -ForegroundColor Red
+    Start-Sleep -Seconds 5
+    exit
+}
+
+# Récupération des informations système
+$currentUser = $env:USERNAME
+$userProfilePath = $env:USERPROFILE
+
+# Sélection de la partition de destination
+$drives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Root -ne 'C:\' } | Select-Object -ExpandProperty Name
+if ($drives.Count -eq 0) {
+    Write-Host "ERREUR : Aucune autre partition que C: n'a été trouvée. Impossible de continuer." -ForegroundColor Red
+    Start-Sleep -Seconds 10
+    exit
+}
+
+Write-Host
+Write-Host "Voici les partitions disponibles pour la sauvegarde : $($drives -join ', ')" -ForegroundColor Green
+$destinationDrive = Read-Host "Veuillez entrer la lettre de la partition de destination (ex: D)"
+
+if (-not ($drives -contains $destinationDrive)) {
+    Write-Host "ERREUR : La lettre '$destinationDrive' n'est pas une partition valide." -ForegroundColor Red
+    Start-Sleep -Seconds 5
+    exit
+}
+
+$destinationPath = "${destinationDrive}:\Users\$currentUser"
+
+# -----------------------------------------------------------------------------------
+# --- PHASE 2 : VALIDATION FINALE
+# -----------------------------------------------------------------------------------
+
+Write-Host
+Write-Host "------------------- RÉCAPITULATIF -------------------" -ForegroundColor Cyan
+Write-Host "Utilisateur actuel   : $currentUser"
+Write-Host "Dossier source       : $userProfilePath"
+Write-Host "Dossier de destination : $destinationPath"
+Write-Host "-------------------------------------------------------"
+Write-Host
+Write-Host "ATTENTION : L'action est sur le point de commencer et ne pourra pas être interrompue." -ForegroundColor Red
+$finalConfirmation = Read-Host "Confirmez-vous cette opération ? (Entrez O pour Oui, N pour Non)"
+
+if ($finalConfirmation -ne 'O') {
+    Write-Host "Opération annulée par l'utilisateur." -ForegroundColor Red
+    Start-Sleep -Seconds 5
+    exit
+}
+
+# -----------------------------------------------------------------------------------
+# --- PHASE 3 : LE MOTEUR - DÉPLACEMENT ET MODIFICATION
+# -----------------------------------------------------------------------------------
+
+try {
+    # Création du dossier parent de destination
+    if (-not (Test-Path -Path $destinationPath)) {
+        Write-Host "Création du dossier de destination : $destinationPath"
+        New-Item -Path $destinationPath -ItemType Directory | Out-Null
+    }
+
+    # Hash table des dossiers à déplacer et de leur ID dans le Registre
+    # La clé est le nom du dossier, la valeur est le nom de l'entrée dans le Registre
+    $foldersToMove = @{
+        'Desktop'    = 'Desktop';
+        'Documents'  = 'Personal';
+        'Downloads'  = '{374DE290-123F-4565-9164-39C4925E467B}';
+        'Music'      = 'My Music';
+        'Pictures'   = 'My Pictures';
+        'Videos'     = 'My Video'
+    }
+
+    $registryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
+
+    # Boucle sur chaque dossier pour le déplacer
+    $i = 1
+    foreach ($folder in $foldersToMove.Keys) {
+        Write-Progress -Activity "Déplacement des dossiers" -Status "Traitement de $folder..." -PercentComplete (($i / $foldersToMove.Count) * 100)
+        
+        $sourceFullPath = Join-Path -Path $userProfilePath -ChildPath $folder
+        $destFullPath = Join-Path -Path $destinationPath -ChildPath $folder
+
+        if (Test-Path -Path $sourceFullPath) {
+            Write-Host "🚚 Déplacement de $folder vers $destFullPath..." -ForegroundColor Yellow
+            
+            # Utilisation de Robocopy pour un déplacement robuste
+            robocopy $sourceFullPath $destFullPath /E /MOVE /NJH /NJS | Out-Null
+            
+            # Mise à jour du Registre
+            Write-Host "✨ Mise à jour du système pour $folder..." -ForegroundColor Green
+            Set-ItemProperty -Path $registryPath -Name $foldersToMove[$folder] -Value $destFullPath -ErrorAction Stop
+        } else {
+             Write-Host "Le dossier source $sourceFullPath n'existe pas, il est ignoré." -ForegroundColor Gray
+        }
+        $i++
+    }
+    
+    Write-Progress -Activity "Déplacement des dossiers" -Completed
+
+    # -----------------------------------------------------------------------------------
+    # --- PHASE 4 : CONCLUSION
+    # -----------------------------------------------------------------------------------
+
+    Write-Host
+    Write-Host "🎉 OPÉRATION TERMINÉE AVEC SUCCÈS ! 🎉" -ForegroundColor Green
+    Write-Host
+    Write-Host "IMPORTANT : Pour que toutes les modifications prennent effet," -ForegroundColor Yellow
+    Write-Host "veuillez redémarrer votre ordinateur maintenant." -ForegroundColor Yellow
+    
+    Read-Host "Appuyez sur Entrée pour fermer ce script."
+
+}
+catch {
+    Write-Host "--- ERREUR CRITIQUE ---" -ForegroundColor Red
+    Write-Host "Une erreur inattendue est survenue. L'opération a été interrompue." -ForegroundColor Red
+    Write-Host "Erreur : $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "Aucune autre modification ne sera effectuée. Veuillez vérifier l'état de vos dossiers." -ForegroundColor Red
+    Read-Host "Appuyez sur Entrée pour quitter."
+}
+
+```

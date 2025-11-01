@@ -1,0 +1,200 @@
+# SecureMover - Fichiers à ignorer dans Git
+# Créé le 2025-11-01
+
+# ============================================================================
+# Fichiers générés par le script
+# ============================================================================
+
+# Logs du script
+*.log
+SecureMover.log
+
+# Sauvegardes du registre Windows (contiennent des données système sensibles)
+*.reg
+SecureMover_Backup_*.reg
+
+# Fichiers temporaires PowerShell
+*.tmp
+*.temp
+
+# ============================================================================
+# Fichiers/Dossiers Windows
+# ============================================================================
+
+# Fichiers système Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Dossiers système
+System Volume Information/
+RECYCLER/
+
+# ============================================================================
+# Éditeurs et IDEs
+# ============================================================================
+
+# Visual Studio Code / Cursor
+.vscode/
+.cursor/
+*.code-workspace
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# JetBrains (PowerShell Studio, etc)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Notepad++
+*.bak
+
+# ============================================================================
+# Fichiers de configuration locale
+# ============================================================================
+
+# Configuration utilisateur locale (ne pas partager)
+config.local.json
+settings.local.json
+*.local
+
+# Fichiers de test personnel
+test_*.ps1
+debug_*.ps1
+scratch_*.ps1
+
+# ============================================================================
+# Données sensibles
+# ============================================================================
+
+# Credentials et secrets
+credentials.json
+secrets.json
+*.key
+*.pem
+*.pfx
+*.p12
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local
+
+# ============================================================================
+# Build et Distribution
+# ============================================================================
+
+# Dossiers de build
+build/
+dist/
+release/
+publish/
+
+# Packages
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+
+# Sauf les releases officielles (on les ajoutera manuellement)
+!releases/*.zip
+
+# ============================================================================
+# Tests et Coverage
+# ============================================================================
+
+# Résultats de tests
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Pester
+Pester*.xml
+coverage.xml
+
+# ============================================================================
+# Documentation générée
+# ============================================================================
+
+# Docs auto-générées (on garde les docs manuelles)
+docs/generated/
+docs/_site/
+site/
+
+# ============================================================================
+# Fichiers temporaires divers
+# ============================================================================
+
+# Fichiers de sauvegarde
+*~
+*.swp
+*.swo
+*~.ps1
+
+# Fichiers de cache
+cache/
+.cache/
+
+# ============================================================================
+# Spécifique au projet SecureMover
+# ============================================================================
+
+# Fichiers de test avec vraies données
+test_data/
+sample_user_profile/
+
+# Résultats de benchmarks
+benchmark_results/
+performance_logs/
+
+# ============================================================================
+# IMPORTANT : Fichiers à TOUJOURS inclure
+# ============================================================================
+# Ces fichiers DOIVENT être dans le repo :
+# - SecureMover.ps1 (script principal)
+# - README.md
+# - LICENSE
+# - CHANGELOG.md
+# - VERSION.txt
+# - QUICKSTART.md
+# - PROJECT_STRUCTURE.md
+# - BUGS.md
+# - WORK_HISTORY.md
+# - CURRENT_STATUS.md
+# - TODO_NEXT.md
+# - JOURNAL_DE_BORD.txt
+# - 00_RAPPORT_FINAL_DEBUG.txt
+# - 00_LISEZMOI_IMPORTANT.txt
+# - .team/ (tous les rapports)
+# - docs/ (documentation)
+# - tests/ (tests automatisés)
+# - scripts/ (scripts utilitaires)
+# - .github/ (GitHub workflows)
+# - .gitignore (ce fichier)
+
+# ============================================================================
+# Notes
+# ============================================================================
+#
+# Ce .gitignore est configuré pour :
+# 1. Protéger les données sensibles (sauvegardes registre, credentials)
+# 2. Ignorer les fichiers générés automatiquement (logs, temp)
+# 3. Exclure les configurations locales spécifiques à chaque dev
+# 4. Garder le repo propre et léger
+#
+# Si vous avez besoin d'ajouter un fichier ignoré, utilisez :
+#   git add -f <fichier>
+#
+# Pour voir les fichiers ignorés :
+#   git status --ignored
+#
+# ============================================================================
