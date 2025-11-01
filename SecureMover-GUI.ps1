@@ -96,19 +96,22 @@ $scriptPath = $PSScriptRoot
             </Style.Triggers>
         </Style>
 
-        <!-- CORRECTION UX: Style ComboBox avec texte NOIR pour visibilite -->
+        <!-- CORRECTION UX: Style ComboBox avec texte NOIR visible -->
         <Style TargetType="ComboBox">
-            <Setter Property="Background" Value="#252526"/>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#000000"/>
             <Setter Property="BorderBrush" Value="#3F3F46"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
 
+        <!-- Style pour items dans liste deroulante - TEXTE NOIR sur BLANC -->
         <Style TargetType="ComboBoxItem">
             <Setter Property="Background" Value="#FFFFFF"/>
             <Setter Property="Foreground" Value="#000000"/>
             <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontWeight" Value="Normal"/>
             <Style.Triggers>
                 <Trigger Property="IsHighlighted" Value="True">
                     <Setter Property="Background" Value="#0E639C"/>
@@ -282,14 +285,44 @@ $scriptPath = $PSScriptRoot
                 CornerRadius="4"
                 Padding="15"
                 Margin="0,0,0,20">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <TextBlock x:Name="LogTextBlock"
-                           FontFamily="Consolas"
-                           FontSize="11"
-                           Foreground="#CCCCCC"
-                           TextWrapping="Wrap"
-                           Text="Pret. Selectionnez un profil et une destination."/>
-            </ScrollViewer>
+            <DockPanel>
+                <!-- Header avec bouton export -->
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Text="JOURNAL D'ACTIVITE"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               Foreground="#FFFFFF"
+                               VerticalAlignment="Center"/>
+
+                    <Button Grid.Column="1"
+                            x:Name="ExportLogsButton"
+                            Content="EXPORTER"
+                            Style="{StaticResource ModernButton}"
+                            Height="28"
+                            Padding="12,4"
+                            FontSize="10"/>
+                </Grid>
+
+                <!-- Log viewer avec hauteur limitee (3 lignes) -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              MaxHeight="90"
+                              Background="#1E1E1E"
+                              BorderThickness="0">
+                    <TextBlock x:Name="LogTextBlock"
+                               FontFamily="Consolas"
+                               FontSize="11"
+                               Foreground="#CCCCCC"
+                               TextWrapping="Wrap"
+                               Padding="5"
+                               Text="Pret. Selectionnez un profil et une destination."/>
+                </ScrollViewer>
+            </DockPanel>
         </Border>
 
         <!-- FOOTER -->
@@ -618,6 +651,144 @@ $WhatIfButton_Click = {
     )
 }
 
+$ExportLogsButton_Click = {
+    try {
+        Write-GUILog "Export des logs demande..." "Info"
+
+        # Creer nom de fichier avec timestamp
+        $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+        $defaultFileName = "SecureMover_Logs_$timestamp"
+
+        # Dialog pour choisir l'emplacement et le format
+        Add-Type -AssemblyName System.Windows.Forms
+        $saveDialog = New-Object System.Windows.Forms.SaveFileDialog
+        $saveDialog.Title = "Exporter le journal d'activite"
+        $saveDialog.Filter = "Fichier texte (*.txt)|*.txt|Fichier Markdown (*.md)|*.md|Fichier HTML (*.html)|*.html"
+        $saveDialog.FileName = $defaultFileName
+        $saveDialog.InitialDirectory = [Environment]::GetFolderPath("Desktop")
+
+        if ($saveDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+            $filePath = $saveDialog.FileName
+            $extension = [System.IO.Path]::GetExtension($filePath).ToLower()
+
+            # Recuperer le contenu des logs
+            $logContent = $LogTextBlock.Text
+
+            switch ($extension) {
+                ".txt" {
+                    # Export texte brut
+                    $logContent | Out-File -FilePath $filePath -Encoding UTF8
+                    Write-GUILog "Logs exportes en TXT : $filePath" "Success"
+                }
+                ".md" {
+                    # Export Markdown
+                    $mdContent = "# SecureMover - Journal d'Activite`n`n"
+                    $mdContent += "**Date d'export** : $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')`n`n"
+                    $mdContent += "## Logs`n`n"
+                    $mdContent += "``````text`n"
+                    $mdContent += $logContent
+                    $mdContent += "`n``````"
+                    $mdContent | Out-File -FilePath $filePath -Encoding UTF8
+                    Write-GUILog "Logs exportes en Markdown : $filePath" "Success"
+                }
+                ".html" {
+                    # Export HTML
+                    $htmlContent = @"
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureMover - Journal d'Activite</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1E1E1E;
+            color: #CCCCCC;
+            padding: 20px;
+            margin: 0;
+        }
+        .header {
+            background-color: #2D2D30;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0E639C;
+        }
+        h1 {
+            color: #FFFFFF;
+            margin: 0 0 10px 0;
+        }
+        .timestamp {
+            color: #A0A0A0;
+            font-size: 14px;
+        }
+        .logs {
+            background-color: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #3F3F46;
+        }
+        .log-line {
+            margin: 2px 0;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #606060;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SecureMover - Journal d'Activite</h1>
+        <div class="timestamp">Export le : $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')</div>
+    </div>
+    <div class="logs">$([System.Web.HttpUtility]::HtmlEncode($logContent))</div>
+    <div class="footer">SecureMover v2.0.2 GUI - MIT License - DrSmoke 2025</div>
+</body>
+</html>
+"@
+                    $htmlContent | Out-File -FilePath $filePath -Encoding UTF8
+                    Write-GUILog "Logs exportes en HTML : $filePath" "Success"
+                }
+                default {
+                    # Par defaut, export en texte
+                    $logContent | Out-File -FilePath $filePath -Encoding UTF8
+                    Write-GUILog "Logs exportes : $filePath" "Success"
+                }
+            }
+
+            # Message de confirmation
+            [System.Windows.MessageBox]::Show(
+                "Les logs ont ete exportes avec succes !`n`n" +
+                "Fichier : $filePath`n`n" +
+                "Vous pouvez maintenant consulter ce fichier.",
+                "Export Reussi",
+                [System.Windows.MessageBoxButton]::OK,
+                [System.Windows.MessageBoxImage]::Information
+            )
+        }
+        else {
+            Write-GUILog "Export annule par l'utilisateur" "Warning"
+        }
+    }
+    catch {
+        Write-GUILog "Erreur lors de l'export : $_" "Error"
+        [System.Windows.MessageBox]::Show(
+            "Une erreur est survenue lors de l'export :`n`n$_",
+            "Erreur d'Export",
+            [System.Windows.MessageBoxButton]::OK,
+            [System.Windows.MessageBoxImage]::Error
+        )
+    }
+}
+
 $DriveComboBox_SelectionChanged = {
     if ($DriveComboBox.SelectedIndex -ne -1) {
         try {
@@ -671,6 +842,7 @@ try {
     $RestoreButton = $window.FindName("RestoreButton")
     $BackupButton = $window.FindName("BackupButton")
     $WhatIfButton = $window.FindName("WhatIfButton")
+    $ExportLogsButton = $window.FindName("ExportLogsButton")
     $ProgressBorder = $window.FindName("ProgressBorder")
     $ProgressBar = $window.FindName("ProgressBar")
     $ProgressText = $window.FindName("ProgressText")
@@ -681,6 +853,7 @@ try {
     $RestoreButton.Add_Click($RestoreButton_Click)
     $BackupButton.Add_Click($BackupButton_Click)
     $WhatIfButton.Add_Click($WhatIfButton_Click)
+    $ExportLogsButton.Add_Click($ExportLogsButton_Click)
     $DriveComboBox.Add_SelectionChanged($DriveComboBox_SelectionChanged)
 
     # Initialiser l'interface
