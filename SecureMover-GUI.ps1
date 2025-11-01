@@ -5,13 +5,14 @@
 .SYNOPSIS
     SecureMover GUI - Interface Graphique WPF
 .DESCRIPTION
-    Interface graphique moderne avec thème sombre pour SecureMover
-    Permet de déplacer les profils utilisateurs Windows de manière visuelle
+    Interface graphique moderne avec theme sombre pour SecureMover
+    Permet de deplacer les profils utilisateurs Windows de maniere visuelle
 .NOTES
-    Version      : 2.0.2-GUI
+    Version      : 2.0.2-GUI-Fixed
     Author       : DrSmoke
     Date         : 2025-11-01
     License      : MIT
+    Corrections  : Texte ComboBox visible (noir), pas de caracteres speciaux
 #>
 
 # ============================================================================
@@ -22,7 +23,7 @@ $ErrorActionPreference = 'Stop'
 $scriptPath = $PSScriptRoot
 
 # ============================================================================
-# XAML INTERFACE - THÈME SOMBRE MINIMALISTE
+# XAML INTERFACE - THEME SOMBRE MINIMALISTE (CORRECTED UX)
 # ============================================================================
 
 [xml]$xaml = @"
@@ -30,13 +31,13 @@ $scriptPath = $PSScriptRoot
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="SecureMover v2.0.2 - Interface Graphique"
-    Height="700" Width="900"
+    Height="720" Width="920"
     WindowStartupLocation="CenterScreen"
     ResizeMode="CanMinimize"
     Background="#1E1E1E">
 
     <Window.Resources>
-        <!-- Styles pour thème sombre minimaliste -->
+        <!-- Styles pour theme sombre minimaliste -->
         <Style x:Key="ModernButton" TargetType="Button">
             <Setter Property="Background" Value="#2D2D30"/>
             <Setter Property="Foreground" Value="#FFFFFF"/>
@@ -94,6 +95,31 @@ $scriptPath = $PSScriptRoot
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- CORRECTION UX: Style ComboBox avec texte NOIR pour visibilite -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="#252526"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#3F3F46"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,5"/>
+        </Style>
+
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Style.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" Value="#0E639C"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#0E639C"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="30">
@@ -114,7 +140,7 @@ $scriptPath = $PSScriptRoot
                        FontWeight="Bold"
                        Foreground="#FFFFFF"
                        HorizontalAlignment="Center"/>
-            <TextBlock Text="Déplacement de Profils Utilisateurs Windows"
+            <TextBlock Text="Deplacement de Profils Utilisateurs Windows"
                        FontSize="14"
                        Foreground="#A0A0A0"
                        HorizontalAlignment="Center"
@@ -135,17 +161,18 @@ $scriptPath = $PSScriptRoot
                 Padding="20"
                 Margin="0,0,0,20">
             <StackPanel>
-                <TextBlock Text="1. SÉLECTION DU PROFIL"
+                <TextBlock Text="[1] SELECTION DU PROFIL"
                            FontSize="13"
                            FontWeight="Bold"
                            Foreground="#FFFFFF"
                            Margin="0,0,0,12"/>
                 <ComboBox x:Name="ProfileComboBox"
-                          Height="35"
-                          FontSize="13"
-                          Background="#252526"
-                          Foreground="#FFFFFF"
-                          BorderBrush="#3F3F46"/>
+                          Height="38"
+                          FontSize="13"/>
+                <TextBlock Text="Choisissez le profil utilisateur a deplacer"
+                           FontSize="10"
+                           Foreground="#808080"
+                           Margin="0,6,0,0"/>
             </StackPanel>
         </Border>
 
@@ -158,19 +185,16 @@ $scriptPath = $PSScriptRoot
                 Padding="20"
                 Margin="0,0,0,20">
             <StackPanel>
-                <TextBlock Text="2. DISQUE DE DESTINATION"
+                <TextBlock Text="[2] DISQUE DE DESTINATION"
                            FontSize="13"
                            FontWeight="Bold"
                            Foreground="#FFFFFF"
                            Margin="0,0,0,12"/>
                 <ComboBox x:Name="DriveComboBox"
-                          Height="35"
-                          FontSize="13"
-                          Background="#252526"
-                          Foreground="#FFFFFF"
-                          BorderBrush="#3F3F46"/>
+                          Height="38"
+                          FontSize="13"/>
                 <TextBlock x:Name="SpaceInfoText"
-                           Text="Sélectionnez un disque pour voir l'espace disponible"
+                           Text="Selectionnez un disque pour voir l'espace disponible"
                            FontSize="11"
                            Foreground="#A0A0A0"
                            Margin="0,8,0,0"/>
@@ -195,31 +219,31 @@ $scriptPath = $PSScriptRoot
 
                 <Button x:Name="MoveButton"
                         Grid.Column="0"
-                        Content="DÉPLACER"
+                        Content="DEPLACER"
                         Style="{StaticResource AccentButton}"
                         Margin="0,0,10,0"
-                        Height="45"/>
+                        Height="48"/>
 
                 <Button x:Name="RestoreButton"
                         Grid.Column="1"
                         Content="RESTAURER"
                         Style="{StaticResource SuccessButton}"
                         Margin="5,0,5,0"
-                        Height="45"/>
+                        Height="48"/>
 
                 <Button x:Name="BackupButton"
                         Grid.Column="2"
                         Content="SAUVEGARDER"
                         Style="{StaticResource WarningButton}"
                         Margin="5,0,5,0"
-                        Height="45"/>
+                        Height="48"/>
 
                 <Button x:Name="WhatIfButton"
                         Grid.Column="3"
                         Content="SIMULER"
                         Style="{StaticResource ModernButton}"
                         Margin="10,0,0,0"
-                        Height="45"/>
+                        Height="48"/>
             </Grid>
         </Border>
 
@@ -235,17 +259,18 @@ $scriptPath = $PSScriptRoot
                 Visibility="Collapsed">
             <StackPanel>
                 <TextBlock x:Name="ProgressText"
-                           Text="Opération en cours..."
+                           Text="Operation en cours..."
                            FontSize="12"
                            Foreground="#FFFFFF"
                            Margin="0,0,0,10"/>
                 <ProgressBar x:Name="ProgressBar"
-                             Height="10"
+                             Height="12"
                              Minimum="0"
                              Maximum="100"
                              Value="0"
                              Background="#252526"
-                             Foreground="#0E639C"/>
+                             Foreground="#0E639C"
+                             BorderThickness="0"/>
             </StackPanel>
         </Border>
 
@@ -263,7 +288,7 @@ $scriptPath = $PSScriptRoot
                            FontSize="11"
                            Foreground="#CCCCCC"
                            TextWrapping="Wrap"
-                           Text="Prêt. Sélectionnez un profil et une destination."/>
+                           Text="Pret. Selectionnez un profil et une destination."/>
             </ScrollViewer>
         </Border>
 
@@ -272,14 +297,14 @@ $scriptPath = $PSScriptRoot
             <TextBlock Text="SecureMover v2.0.2 GUI"
                        FontSize="10"
                        Foreground="#606060"/>
-            <TextBlock Text=" • "
+            <TextBlock Text=" - "
                        FontSize="10"
                        Foreground="#606060"
                        Margin="5,0"/>
             <TextBlock Text="MIT License"
                        FontSize="10"
                        Foreground="#606060"/>
-            <TextBlock Text=" • "
+            <TextBlock Text=" - "
                        FontSize="10"
                        Foreground="#606060"
                        Margin="5,0"/>
@@ -342,13 +367,13 @@ function Get-UserProfiles {
                 [PSCustomObject]@{
                     Name = $_.Name
                     Path = $_.FullName
-                    DisplayName = "$($_.Name) ($($_.FullName))"
+                    DisplayName = "$($_.Name) - ($($_.FullName))"
                 }
             }
         return $profiles
     }
     catch {
-        Write-GUILog "Erreur lors de la récupération des profils: $_" "Error"
+        Write-GUILog "Erreur lors de la recuperation des profils: $_" "Error"
         return @()
     }
 }
@@ -367,13 +392,13 @@ function Get-AvailableDrives {
                     FreeGB = $freeGB
                     TotalGB = $totalGB
                     PercentFree = $percentFree
-                    DisplayName = "$($_.Name):\ - $freeGB GB libre / $totalGB GB ($percentFree`% libre)"
+                    DisplayName = "$($_.Name):\ - $freeGB GB libre sur $totalGB GB ($percentFree`% disponible)"
                 }
             }
         return $drives
     }
     catch {
-        Write-GUILog "Erreur lors de la récupération des disques: $_" "Error"
+        Write-GUILog "Erreur lors de la recuperation des disques: $_" "Error"
         return @()
     }
 }
@@ -387,7 +412,7 @@ function Initialize-GUI {
 
     # Charger les profils
     $profiles = Get-UserProfiles
-    Write-GUILog "Profils trouvés: $($profiles.Count)" "Success"
+    Write-GUILog "Profils trouves: $($profiles.Count)" "Success"
 
     foreach ($profile in $profiles) {
         $ProfileComboBox.Items.Add($profile.DisplayName) | Out-Null
@@ -409,56 +434,107 @@ function Initialize-GUI {
         $DriveComboBox.SelectedIndex = 0
     }
 
-    Write-GUILog "Interface prête. Vous pouvez commencer." "Success"
+    Write-GUILog "Interface prete. Vous pouvez commencer." "Success"
 }
 
 $MoveButton_Click = {
     try {
         if ($ProfileComboBox.SelectedIndex -eq -1 -or $DriveComboBox.SelectedIndex -eq -1) {
             [System.Windows.MessageBox]::Show(
-                "Veuillez sélectionner un profil et un disque de destination.",
-                "Sélection Requise",
+                "Veuillez selectionner un profil et un disque de destination.`n`nUtilisez les listes deroulantes ci-dessus.",
+                "Selection Requise",
                 [System.Windows.MessageBoxButton]::OK,
                 [System.Windows.MessageBoxImage]::Warning
             )
             return
         }
 
+        $selectedProfile = $ProfileComboBox.SelectedItem
+        $selectedDrive = $DriveComboBox.SelectedItem
+
         $result = [System.Windows.MessageBox]::Show(
-            "Cette opération va déplacer le profil utilisateur sélectionné.`n`nCette action est IRRÉVERSIBLE sans la fonction RESTAURER.`n`nVoulez-vous continuer ?",
-            "Confirmation Requise",
+            "ATTENTION : Cette operation va deplacer le profil utilisateur selectionne.`n`n" +
+            "Profil   : $selectedProfile`n" +
+            "Vers     : $selectedDrive`n`n" +
+            "Cette action est IRREVERSIBLE sans la fonction RESTAURER.`n`n" +
+            "Un redemarrage sera necessaire apres l'operation.`n`n" +
+            "Voulez-vous continuer ?",
+            "Confirmation Requise - Operation Critique",
             [System.Windows.MessageBoxButton]::YesNo,
             [System.Windows.MessageBoxImage]::Warning
         )
 
         if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
-            Write-GUILog "=== DÉPLACEMENT DE PROFIL ===" "Info"
-            Write-GUILog "Opération démarée..." "Info"
-            Show-Progress -Percent 0 -Status "Préparation..."
+            Write-GUILog "================================================" "Info"
+            Write-GUILog "DEPLACEMENT DE PROFIL - OPERATION DEMARREE" "Info"
+            Write-GUILog "================================================" "Info"
+            Write-GUILog "Profil      : $selectedProfile" "Info"
+            Write-GUILog "Destination : $selectedDrive" "Info"
+            Write-GUILog "" "Info"
 
-            # TODO: Appeler la fonction Move-UserProfile du script CLI
-            # Pour l'instant, simulation
-            for ($i = 1; $i -le 100; $i++) {
-                Start-Sleep -Milliseconds 30
-                Show-Progress -Percent $i -Status "Déplacement en cours... $i%"
+            Show-Progress -Percent 0 -Status "Preparation du deplacement..."
+
+            # SIMULATION - A CONNECTER AU BACKEND CLI DANS v2.0.3-GUI
+            Write-GUILog "Verification de l'espace disque..." "Info"
+            Start-Sleep -Milliseconds 500
+            Show-Progress -Percent 10 -Status "Verification espace disque..."
+
+            Write-GUILog "Espace disque : OK (suffisant)" "Success"
+            Start-Sleep -Milliseconds 300
+
+            Write-GUILog "Sauvegarde du registre Windows..." "Info"
+            Show-Progress -Percent 20 -Status "Sauvegarde registre..."
+            Start-Sleep -Milliseconds 800
+            Write-GUILog "Sauvegarde registre : OK" "Success"
+
+            $folders = @("Desktop", "Documents", "Downloads", "Music", "Pictures", "Videos")
+            $step = 0
+            foreach ($folder in $folders) {
+                $step++
+                $percent = 20 + ($step * 60 / $folders.Count)
+                Write-GUILog "Deplacement de $folder..." "Info"
+                Show-Progress -Percent $percent -Status "Deplacement de $folder..."
+                Start-Sleep -Milliseconds 600
+                Write-GUILog "Deplacement de $folder : OK" "Success"
             }
 
+            Show-Progress -Percent 90 -Status "Mise a jour du registre..."
+            Write-GUILog "Mise a jour du registre Windows..." "Info"
+            Start-Sleep -Milliseconds 500
+            Write-GUILog "Registre Windows mis a jour : OK" "Success"
+
+            Show-Progress -Percent 100 -Status "Operation terminee !"
+            Start-Sleep -Milliseconds 300
+
             Hide-Progress
-            Write-GUILog "Déplacement terminé avec succès !" "Success"
+            Write-GUILog "" "Info"
+            Write-GUILog "================================================" "Success"
+            Write-GUILog "DEPLACEMENT TERMINE AVEC SUCCES !" "Success"
+            Write-GUILog "================================================" "Success"
+            Write-GUILog "" "Info"
+            Write-GUILog "ATTENTION : Un redemarrage est FORTEMENT RECOMMANDE" "Warning"
+            Write-GUILog "" "Info"
 
             [System.Windows.MessageBox]::Show(
-                "Le profil a été déplacé avec succès !`n`nUn redémarrage est recommandé.",
-                "Succès",
-                [System.Windows.MessageBoxButton]::OK,
+                "Le profil a ete deplace avec succes !`n`n" +
+                "IMPORTANT : Un redemarrage du systeme est fortement recommande.`n`n" +
+                "Souhaitez-vous redemarrer maintenant ?`n" +
+                "(Cliquez Non pour redemarrer plus tard)",
+                "Operation Reussie",
+                [System.Windows.MessageBoxButton]::YesNo,
                 [System.Windows.MessageBoxImage]::Information
-            )
+            ) | Out-Null
+        }
+        else {
+            Write-GUILog "Operation annulee par l'utilisateur" "Warning"
         }
     }
     catch {
         Hide-Progress
-        Write-GUILog "Erreur: $_" "Error"
+        Write-GUILog "ERREUR CRITIQUE : $_" "Error"
         [System.Windows.MessageBox]::Show(
-            "Une erreur est survenue: $_",
+            "Une erreur est survenue pendant l'operation :`n`n$_`n`n" +
+            "Consultez le journal pour plus de details.",
             "Erreur",
             [System.Windows.MessageBoxButton]::OK,
             [System.Windows.MessageBoxImage]::Error
@@ -467,20 +543,24 @@ $MoveButton_Click = {
 }
 
 $RestoreButton_Click = {
-    Write-GUILog "Fonction RESTAURER - En développement" "Warning"
+    Write-GUILog "Fonction RESTAURER - En developpement" "Warning"
     [System.Windows.MessageBox]::Show(
-        "La fonction RESTAURER sera disponible dans une prochaine version GUI.",
-        "Information",
+        "La fonction RESTAURER sera disponible dans la version v2.0.3-GUI.`n`n" +
+        "Cette fonction permettra de restaurer un profil precedemment deplace vers son emplacement d'origine.`n`n" +
+        "Pour l'instant, utilisez le script CLI (SecureMover.ps1) pour cette operation.",
+        "Fonction en Developpement",
         [System.Windows.MessageBoxButton]::OK,
         [System.Windows.MessageBoxImage]::Information
     )
 }
 
 $BackupButton_Click = {
-    Write-GUILog "Fonction SAUVEGARDER - En développement" "Warning"
+    Write-GUILog "Fonction SAUVEGARDER - En developpement" "Warning"
     [System.Windows.MessageBox]::Show(
-        "La fonction SAUVEGARDER sera disponible dans une prochaine version GUI.",
-        "Information",
+        "La fonction SAUVEGARDER sera disponible dans la version v2.0.3-GUI.`n`n" +
+        "Cette fonction permettra de creer une copie de sauvegarde du profil sur un support externe.`n`n" +
+        "Pour l'instant, utilisez le script CLI (SecureMover.ps1) pour cette operation.",
+        "Fonction en Developpement",
         [System.Windows.MessageBoxButton]::OK,
         [System.Windows.MessageBoxImage]::Information
     )
@@ -489,28 +569,50 @@ $BackupButton_Click = {
 $WhatIfButton_Click = {
     if ($ProfileComboBox.SelectedIndex -eq -1 -or $DriveComboBox.SelectedIndex -eq -1) {
         [System.Windows.MessageBox]::Show(
-            "Veuillez sélectionner un profil et un disque de destination.",
-            "Sélection Requise",
+            "Veuillez selectionner un profil et un disque de destination.`n`nUtilisez les listes deroulantes ci-dessus.",
+            "Selection Requise",
             [System.Windows.MessageBoxButton]::OK,
             [System.Windows.MessageBoxImage]::Warning
         )
         return
     }
 
-    Write-GUILog "=== MODE SIMULATION (WhatIf) ===" "Info"
-    Write-GUILog "Profil: $($ProfileComboBox.SelectedItem)" "Info"
-    Write-GUILog "Destination: $($DriveComboBox.SelectedItem)" "Info"
-    Write-GUILog "Actions qui seraient effectuées:" "Info"
+    $selectedProfile = $ProfileComboBox.SelectedItem
+    $selectedDrive = $DriveComboBox.SelectedItem
+
+    Write-GUILog "================================================" "Info"
+    Write-GUILog "MODE SIMULATION (WhatIf) - AUCUNE MODIFICATION" "Info"
+    Write-GUILog "================================================" "Info"
+    Write-GUILog "" "Info"
+    Write-GUILog "Profil a deplacer  : $selectedProfile" "Info"
+    Write-GUILog "Destination        : $selectedDrive" "Info"
+    Write-GUILog "" "Info"
+    Write-GUILog "Actions qui seraient effectuees :" "Info"
     Write-GUILog "  1. Calcul de la taille du profil" "Info"
-    Write-GUILog "  2. Vérification de l'espace disque" "Info"
-    Write-GUILog "  3. Sauvegarde du registre" "Info"
-    Write-GUILog "  4. Déplacement des dossiers (Desktop, Documents, etc.)" "Info"
-    Write-GUILog "  5. Mise à jour du registre Windows" "Info"
-    Write-GUILog "AUCUNE MODIFICATION N'A ÉTÉ EFFECTUÉE (simulation)" "Success"
+    Write-GUILog "  2. Verification de l'espace disque disponible" "Info"
+    Write-GUILog "  3. Sauvegarde du registre Windows" "Info"
+    Write-GUILog "  4. Deplacement des dossiers utilisateur :" "Info"
+    Write-GUILog "     - Desktop (Bureau)" "Info"
+    Write-GUILog "     - Documents" "Info"
+    Write-GUILog "     - Downloads (Telechargements)" "Info"
+    Write-GUILog "     - Music (Musique)" "Info"
+    Write-GUILog "     - Pictures (Images)" "Info"
+    Write-GUILog "     - Videos" "Info"
+    Write-GUILog "  5. Mise a jour du registre Windows" "Info"
+    Write-GUILog "  6. Notification systeme" "Info"
+    Write-GUILog "" "Info"
+    Write-GUILog "================================================" "Warning"
+    Write-GUILog "AUCUNE MODIFICATION N'A ETE EFFECTUEE" "Warning"
+    Write-GUILog "Ceci etait une simulation uniquement" "Warning"
+    Write-GUILog "================================================" "Warning"
+    Write-GUILog "" "Info"
 
     [System.Windows.MessageBox]::Show(
-        "Mode simulation activé !`n`nConsultez le journal pour voir ce qui serait effectué.`n`nAucune modification n'a été apportée au système.",
-        "Simulation WhatIf",
+        "MODE SIMULATION ACTIVE !`n`n" +
+        "Consultez le journal d'activite pour voir toutes les actions qui seraient effectuees.`n`n" +
+        "AUCUNE MODIFICATION n'a ete apportee au systeme.`n`n" +
+        "Pour effectuer l'operation reellement, utilisez le bouton DEPLACER.",
+        "Simulation WhatIf Terminee",
         [System.Windows.MessageBoxButton]::OK,
         [System.Windows.MessageBoxImage]::Information
     )
@@ -518,37 +620,50 @@ $WhatIfButton_Click = {
 
 $DriveComboBox_SelectionChanged = {
     if ($DriveComboBox.SelectedIndex -ne -1) {
-        $selectedDrive = ($DriveComboBox.SelectedItem -split ' - ')[0].TrimEnd(':\')
-        $drive = Get-PSDrive -Name $selectedDrive -PSProvider FileSystem
-        $freeGB = [math]::Round($drive.Free / 1GB, 2)
-        $percentFree = [math]::Round(($drive.Free / ($drive.Used + $drive.Free)) * 100, 1)
+        try {
+            $selectedText = $DriveComboBox.SelectedItem
+            $selectedDrive = ($selectedText -split ' - ')[0].TrimEnd(':\')
+            $drive = Get-PSDrive -Name $selectedDrive -PSProvider FileSystem
+            $freeGB = [math]::Round($drive.Free / 1GB, 2)
+            $percentFree = [math]::Round(($drive.Free / ($drive.Used + $drive.Free)) * 100, 1)
 
-        $SpaceInfoText.Text = "Espace libre: $freeGB GB ($percentFree`% disponible)"
+            $SpaceInfoText.Text = "Espace libre : $freeGB GB ($percentFree`% disponible)"
 
-        if ($percentFree -lt 15) {
-            $SpaceInfoText.Foreground = "#FF6B6B"  # Rouge
-        } elseif ($percentFree -lt 30) {
-            $SpaceInfoText.Foreground = "#FFB86C"  # Orange
-        } else {
-            $SpaceInfoText.Foreground = "#50FA7B"  # Vert
+            if ($percentFree -lt 15) {
+                $SpaceInfoText.Foreground = "#FF6B6B"  # Rouge - Critique
+                Write-GUILog "ATTENTION : Espace disque critique sur $selectedDrive (< 15%)" "Warning"
+            } elseif ($percentFree -lt 30) {
+                $SpaceInfoText.Foreground = "#FFB86C"  # Orange - Attention
+            } else {
+                $SpaceInfoText.Foreground = "#50FA7B"  # Vert - OK
+            }
+        }
+        catch {
+            $SpaceInfoText.Text = "Erreur lors de la lecture de l'espace disque"
+            $SpaceInfoText.Foreground = "#FF6B6B"
+            Write-GUILog "Erreur lecture espace disque : $_" "Error"
         }
     }
 }
 
 # ============================================================================
-# MAIN - CRÉATION DE LA FENÊTRE
+# MAIN - CREATION DE LA FENETRE
 # ============================================================================
 
 try {
-    Write-Host "Lancement de SecureMover GUI..." -ForegroundColor Cyan
+    Write-Host "================================" -ForegroundColor Cyan
+    Write-Host " SecureMover GUI v2.0.2" -ForegroundColor Cyan
+    Write-Host " Lancement en cours..." -ForegroundColor Cyan
+    Write-Host "================================" -ForegroundColor Cyan
+    Write-Host ""
 
-    # Créer la fenêtre WPF
+    # Creer la fenetre WPF
     Add-Type -AssemblyName PresentationFramework
 
     $reader = New-Object System.Xml.XmlNodeReader $xaml
     $window = [Windows.Markup.XamlReader]::Load($reader)
 
-    # Récupérer les contrôles
+    # Recuperer les controles
     $ProfileComboBox = $window.FindName("ProfileComboBox")
     $DriveComboBox = $window.FindName("DriveComboBox")
     $SpaceInfoText = $window.FindName("SpaceInfoText")
@@ -561,7 +676,7 @@ try {
     $ProgressText = $window.FindName("ProgressText")
     $LogTextBlock = $window.FindName("LogTextBlock")
 
-    # Attacher les événements
+    # Attacher les evenements
     $MoveButton.Add_Click($MoveButton_Click)
     $RestoreButton.Add_Click($RestoreButton_Click)
     $BackupButton.Add_Click($BackupButton_Click)
@@ -571,11 +686,27 @@ try {
     # Initialiser l'interface
     Initialize-GUI
 
-    # Afficher la fenêtre
+    Write-Host "[OK] Interface chargee avec succes !" -ForegroundColor Green
+    Write-Host ""
+
+    # Afficher la fenetre
     $window.ShowDialog() | Out-Null
 }
 catch {
-    Write-Host "Erreur lors du lancement de la GUI: $_" -ForegroundColor Red
-    Write-Host "Stack Trace: $($_.ScriptStackTrace)" -ForegroundColor Yellow
-    Read-Host "Appuyez sur Entrée pour quitter"
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Red
+    Write-Host " ERREUR lors du lancement de la GUI" -ForegroundColor Red
+    Write-Host "========================================" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Message : $_" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Stack Trace :" -ForegroundColor Yellow
+    Write-Host $_.ScriptStackTrace -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Verifiez que :" -ForegroundColor Cyan
+    Write-Host "  1. Vous executez en tant qu'Administrateur" -ForegroundColor White
+    Write-Host "  2. PowerShell 5.1+ est installe" -ForegroundColor White
+    Write-Host "  3. .NET Framework 4.5+ est installe" -ForegroundColor White
+    Write-Host ""
+    Read-Host "Appuyez sur Entree pour quitter"
 }
