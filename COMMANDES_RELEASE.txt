@@ -1,0 +1,41 @@
+# COMMANDES POUR CRÉER LA RELEASE v2.0.2 AVEC GitHub CLI
+
+## Étape 1 : Redémarrer PowerShell
+1. Fermez COMPLÈTEMENT votre terminal PowerShell actuel
+2. Rouvrez un NOUVEAU PowerShell
+
+## Étape 2 : Vérifier que gh fonctionne
+gh --version
+
+## Étape 3 : S'authentifier avec GitHub (une seule fois)
+gh auth login
+
+# Répondez aux questions :
+# - What account: GitHub.com
+# - Protocol: HTTPS
+# - Authenticate: Login with a web browser
+# - Copiez le code affiché
+# - Appuyez Entrée pour ouvrir le navigateur
+# - Collez le code sur GitHub
+# - Autorisez
+
+## Étape 4 : Aller dans le dossier du projet
+cd C:\Users\DrSmoke\projet\Claude\SecureMover
+
+## Étape 5 : Créer la release avec les 3 fichiers
+gh release create v2.0.2 ^
+  --title "SecureMover v2.0.2 - Interface Graphique + Exécutable Standalone" ^
+  --notes-file RELEASE_v2.0.2.md ^
+  Release\SecureMover-GUI.exe ^
+  SecureMover-GUI.ps1 ^
+  SecureMover.ps1
+
+## Étape 6 : Vérifier la publication
+gh release view v2.0.2
+
+# URL de la release :
+# https://github.com/BlackAngel242/SecureMov2/releases/tag/v2.0.2
+
+===========================================
+IMPORTANT : Exécutez ces commandes dans l'ORDRE !
+===========================================
