@@ -23,7 +23,7 @@ N'hésitez pas à me contacter pour :
 **Langues** : Français 🇫🇷
 
 ### Email
-📧 **drsmoke@example.com** *(à remplacer par votre email si souhaité)*
+📧 **smokesama242@gmail.com**
 
 ---
 

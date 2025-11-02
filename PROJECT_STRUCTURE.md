@@ -460,7 +460,7 @@ Lors de l'utilisation du script, les fichiers suivants sont crees :
 
 **DrSmoke** - "un mbokatier bien engage"
 - GitHub : https://github.com/DrSmoke
-- Email : drsmoke@example.com
+- Email : smokesama242@gmail.com
 
 ### Projet
 

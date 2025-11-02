@@ -250,7 +250,7 @@ et ce projet respecte le [Versionnage Semantique](https://semver.org/lang/fr/).
 
 - **Issues** : https://github.com/DrSmoke/SecureMover/issues
 - **Discussions** : https://github.com/DrSmoke/SecureMover/discussions
-- **Email** : drsmoke@example.com
+- **Email** : smokesama242@gmail.com
 
 ---
 

@@ -685,7 +685,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 - 📱 **WhatsApp** : [+242 066 50 72 75](https://wa.me/242066507275)
 - 🐛 **Bugs** : [Ouvrir une issue](https://github.com/DrSmoke/SecureMover/issues)
 - 💬 **Questions** : [Discussions](https://github.com/DrSmoke/SecureMover/discussions)
-- 📧 **Email** : drsmoke@example.com
+- 📧 **Email** : smokesama242@gmail.com
 
 **Langues** : Français 🇫🇷
 
