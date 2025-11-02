@@ -1,0 +1,34 @@
+FICHIERS À UPLOADER SUR GITHUB RELEASE v2.0.2
+=================================================
+
+📦 3 fichiers à uploader dans cet ordre :
+
+1. SecureMover-GUI.exe (170 KB) - RECOMMANDÉ
+   Chemin : Release\SecureMover-GUI.exe
+   Description : Exécutable standalone avec interface graphique
+
+2. SecureMover-GUI.ps1 (35 KB)
+   Chemin : SecureMover-GUI.ps1
+   Description : Script PowerShell avec interface graphique
+
+3. SecureMover.ps1 (72 KB)
+   Chemin : SecureMover.ps1
+   Description : Script PowerShell en ligne de commande
+
+=================================================
+
+URL pour créer la release :
+https://github.com/BlackAngel242/SecureMov2/releases/new
+
+Tag à utiliser : v2.0.2
+
+Titre : SecureMover v2.0.2 - Interface Graphique + Exécutable Standalone
+
+=================================================
+
+SHA256 de SecureMover-GUI.exe :
+65013299b083541a0cad6ccaf0d4c4d1c8e8d3f36c7bde99f40bdfb2f3fefd55
+
+=================================================
+
+Voir GUIDE_CREATION_RELEASE.md pour les instructions détaillées.
