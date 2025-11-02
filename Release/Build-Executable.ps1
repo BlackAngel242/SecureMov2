@@ -1,5 +1,5 @@
 #Requires -Version 5.1
-#Requires -RunAsAdministrator
+# Note: Admin non requis pour compilation, seulement pour execution de l'exe final
 
 <#
 .SYNOPSIS
@@ -42,37 +42,20 @@ Write-Host "      Source : $sourceScript" -ForegroundColor Gray
 Write-Host "      [OK] Fichier trouve" -ForegroundColor Green
 Write-Host ""
 
-# Verification/Installation de PS2EXE
-Write-Host "[2/5] Verification de PS2EXE..." -ForegroundColor Yellow
+# Verification/Chargement de PS2EXE
+Write-Host "[2/5] Chargement de PS2EXE..." -ForegroundColor Yellow
 
-$ps2exeInstalled = Get-Module -ListAvailable -Name ps2exe
+$ps2exeScript = Join-Path $scriptRoot "ps2exe.ps1"
 
-if (-not $ps2exeInstalled) {
-    Write-Host "      PS2EXE non installe. Installation en cours..." -ForegroundColor Yellow
-    try {
-        # Configurer PSGallery comme source fiable
-        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -ErrorAction SilentlyContinue
-
-        # Installer PS2EXE
-        Install-Module -Name ps2exe -Scope CurrentUser -Force -AllowClobber
-        Write-Host "      [OK] PS2EXE installe avec succes" -ForegroundColor Green
-    }
-    catch {
-        Write-Host "      [ERREUR] Echec installation PS2EXE: $_" -ForegroundColor Red
-        Write-Host ""
-        Write-Host "      Solution manuelle:" -ForegroundColor Yellow
-        Write-Host "      1. Ouvrez PowerShell en Administrateur" -ForegroundColor White
-        Write-Host "      2. Executez: Install-Module -Name ps2exe -Scope CurrentUser" -ForegroundColor White
-        Write-Host "      3. Relancez ce script" -ForegroundColor White
-        exit 1
-    }
-}
-else {
-    Write-Host "      [OK] PS2EXE deja installe (version $($ps2exeInstalled.Version))" -ForegroundColor Green
+if (-not (Test-Path $ps2exeScript)) {
+    Write-Host "      [ERREUR] ps2exe.ps1 introuvable dans Release/" -ForegroundColor Red
+    Write-Host "      Telechargez depuis: https://raw.githubusercontent.com/MScholtes/PS2EXE/master/Module/ps2exe.ps1" -ForegroundColor Yellow
+    exit 1
 }
 
-# Importer le module
-Import-Module ps2exe -ErrorAction Stop
+# Charger le script PS2EXE directement
+. $ps2exeScript
+Write-Host "      [OK] PS2EXE charge (script local)" -ForegroundColor Green
 Write-Host ""
 
 # Nettoyage ancien exe si present
