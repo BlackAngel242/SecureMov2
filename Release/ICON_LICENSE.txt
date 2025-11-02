@@ -1,0 +1,52 @@
+# Licence de l'Icône - SecureMover
+
+## Icône Utilisée
+
+**Nom** : Move Folder Up Icon
+**Source** : Blue Bits Icons by Icojam
+**Format** : ICO (Multi-résolution)
+**Taille** : 463 KB
+
+## Informations de Téléchargement
+
+**URL de téléchargement** : https://files.softicons.com/download/toolbar-icons/blue-bits-icons-by-icojam/ico/2_065.ico
+**Page du projet** : https://www.softicons.com/toolbar-icons/blue-bits-icons-by-icojam/move-folder-up-icon
+**Auteur** : Icojam
+**Date de publication** : 8 Août 2011
+
+## Licence
+
+**Type de licence** : Freeware
+**Usage commercial** : Autorisé (Allowed)
+
+Cette icône est mise à disposition gratuitement et peut être utilisée dans des projets commerciaux selon les termes de la licence Freeware.
+
+## Détails Techniques
+
+L'icône contient plusieurs résolutions :
+- 256x256 pixels
+- 128x128 pixels
+- 48x48 pixels
+- 32x32 pixels
+- 16x16 pixels
+
+Formats disponibles :
+- ICO (Windows)
+- PNG (Multi-résolutions)
+- ICNS (Mac OS)
+
+## Utilisation dans SecureMover
+
+L'icône a été intégrée dans l'exécutable `SecureMover-GUI.exe` via le processus de compilation PS2EXE.
+
+Elle représente visuellement l'action de déplacement de dossiers, ce qui correspond parfaitement à la fonctionnalité principale de SecureMover (déplacement de profils utilisateurs Windows).
+
+## Crédits
+
+Merci à **Icojam** pour avoir créé et partagé cette icône sous licence Freeware.
+
+---
+
+**Fichier téléchargé** : Release/SecureMover.ico
+**Date d'intégration** : 02/11/2025
+**Version SecureMover** : 2.0.2

@@ -45,10 +45,11 @@
 | Propriété | Valeur |
 |-----------|--------|
 | **Nom** | SecureMover-GUI.exe |
-| **Taille** | 60 416 bytes (59 KB) |
+| **Taille** | 174 080 bytes (170 KB) |
 | **Architecture** | x64 (compatible x86) |
 | **Type** | Application Windows Console |
 | **Élévation** | Administrateur obligatoire |
+| **Icône** | ✅ Intégrée (Move Folder) |
 
 ### Métadata Intégrées
 
@@ -63,10 +64,12 @@
 ### Hash SHA256
 
 ```
-6350fc2e87de815fef54331e2bf501b4586ba587ed0ffe14f5603fb6d55e770d
+65013299b083541a0cad6ccaf0d4c4d1c8e8d3f36c7bde99f40bdfb2f3fefd55
 ```
 
 **⚠️ Important** : Vérifiez toujours ce hash avant distribution pour garantir l'intégrité du fichier.
+
+**Note** : Ce hash correspond à la version **avec icône intégrée**.
 
 ---
 
@@ -115,12 +118,23 @@ cd Release
 Invoke-ps2exe -InputFile SecureMover-GUI.ps1 -OutputFile Release\SecureMover-GUI.exe -NoConsole $false -RequireAdmin $true -Title "SecureMover v2.0.2 - by DrSmoke" -Version "2.0.2.0"
 ```
 
-### Ajouter une Icône
+### Icône Intégrée
+
+✅ **L'exécutable contient déjà une icône personnalisée !**
+
+**Icône utilisée** : "Move Folder Up Icon" par Icojam
+- **Licence** : Freeware (usage commercial autorisé)
+- **Source** : Blue Bits Icons
+- **Résolutions** : 256x256, 128x128, 48x48, 32x32, 16x16
+- **Détails** : Voir `ICON_LICENSE.txt`
+
+### Changer l'Icône
+
+Pour utiliser une autre icône :
 
 1. Créer/obtenir un fichier `.ico`
-2. Le nommer `SecureMover.ico`
-3. Le placer dans `Release/`
-4. Relancer `Build-Executable.ps1`
+2. Remplacer `Release/SecureMover.ico`
+3. Relancer `Build-Executable.ps1`
 
 L'icône sera automatiquement intégrée !
 
