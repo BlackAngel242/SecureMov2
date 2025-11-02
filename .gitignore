@@ -94,7 +94,6 @@ secrets.json
 # Dossiers de build
 build/
 dist/
-release/
 publish/
 
 # Packages
@@ -106,6 +105,22 @@ publish/
 
 # Sauf les releases officielles (on les ajoutera manuellement)
 !releases/*.zip
+
+# ============================================================================
+# Release / Executable
+# ============================================================================
+
+# Executables compiles (peuvent etre regeneres avec Build-Executable.ps1)
+Release/*.exe
+
+# Logs de compilation auto-generes
+Release/BUILD_LOG.txt
+Release/JOURNAL_TEMP.txt
+
+# Mais GARDER les scripts et docs de build
+!Release/*.ps1
+!Release/*.md
+!Release/*.ico
 
 # ============================================================================
 # Tests et Coverage

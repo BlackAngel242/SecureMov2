@@ -1,0 +1,71 @@
+# Icône pour l'Exécutable SecureMover
+
+## Statut : OPTIONNEL
+
+L'icône est **optionnelle** pour la compilation de l'exécutable.
+
+## Fichier Attendu
+
+- **Nom** : `SecureMover.ico`
+- **Emplacement** : `Release/SecureMover.ico`
+- **Format** : Fichier .ico Windows standard
+- **Résolutions recommandées** : 16x16, 32x32, 48x48, 256x256
+
+## Comportement
+
+- ✓ **Si présent** : L'icône sera intégrée dans l'exécutable
+- ✓ **Si absent** : L'exécutable utilisera l'icône PowerShell par défaut
+
+Le script `Build-Executable.ps1` détecte automatiquement la présence de l'icône.
+
+## Créer une Icône
+
+### Option 1 : Outils en ligne
+- https://www.icoconverter.com/ (PNG vers ICO)
+- https://convertio.co/fr/png-ico/
+
+### Option 2 : Logiciels
+- **IcoFX** (gratuit/premium)
+- **GIMP** avec plugin ICO
+- **Paint.NET** avec plugin ICO
+
+### Option 3 : ImageMagick (CLI)
+```bash
+# Convertir une image PNG en ICO
+magick convert image.png -define icon:auto-resize=256,128,64,48,32,16 SecureMover.ico
+```
+
+## Design Suggéré
+
+Pour rester cohérent avec le projet :
+
+- **Thème** : Sombre et minimaliste
+- **Couleurs** : Bleu (#0E639C), Gris foncé (#1E1E1E)
+- **Symbole** : Dossier avec flèche, icône de déplacement, ou profil utilisateur
+- **Style** : Flat design moderne
+
+## Exemples de Concepts
+
+1. **Dossier en mouvement** : 📁➡️📁
+2. **Profil utilisateur** : 👤 avec flèche circulaire
+3. **Disque + Flèche** : 💾➡️
+4. **Shield/Secure** : 🛡️ (sécurité)
+
+## Installation
+
+1. Créer ou obtenir un fichier `.ico`
+2. Le renommer en `SecureMover.ico`
+3. Le placer dans `Release/`
+4. Relancer `Build-Executable.ps1`
+
+L'icône sera automatiquement intégrée !
+
+## Vérification
+
+Après compilation, vérifier l'icône dans les propriétés de l'exécutable :
+- Clic droit sur `SecureMover-GUI.exe`
+- Propriétés → L'icône apparaît en haut à gauche
+
+---
+
+**Note** : L'icône n'affecte PAS les fonctionnalités du programme, seulement l'apparence visuelle dans l'explorateur Windows et la barre des tâches.
