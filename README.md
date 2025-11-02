@@ -23,27 +23,34 @@ Un script PowerShell professionnel pour déplacer, restaurer et sauvegarder de m
 - [Sécurité](#-sécurité)
 - [FAQ](#-faq)
 - [Dépannage](#-dépannage)
+- [Cas d'Usage Pratiques](#-cas-dusage-pratiques)
 - [Contribution](#-contribution)
 - [Auteurs](#-auteurs)
+- [Contact & Support](#-contact--support)
 - [Licence](#-licence)
 
 ---
 
 ## 🎯 Vue d'ensemble
 
-**SecureMover** est un outil PowerShell interactif qui permet de déplacer vos dossiers personnels Windows (Documents, Images, Bureau, etc.) vers une partition séparée de votre disque dur. Cela protège vos données en cas de crash système, réinstallation de Windows ou problème avec le disque système.
+**SecureMover** est un outil PowerShell professionnel qui permet de déplacer vos dossiers personnels Windows (Documents, Images, Bureau, etc.) vers une partition séparée de votre disque dur. Cela protège vos données en cas de crash système, réinstallation de Windows ou problème avec le disque système.
+
+**🆕 Version 2.0.2** : Maintenant avec **interface graphique (GUI)** moderne et **exécutable standalone** !
 
 ### Problème résolu
 
 Lorsque Windows est installé sur le disque C:, vos données personnelles (documents, photos, vidéos) sont stockées au même endroit. En cas de :
-- Crash du système d'exploitation
-- Nécessité de réinstaller Windows
-- Corruption du disque système
-- Infection par ransomware ciblant C:
+- 💥 Crash du système d'exploitation
+- 🔄 Nécessité de réinstaller Windows
+- 💾 Disque C: saturé (plus de place !)
+- 🦠 Infection par ransomware ciblant C:
 
 **Vos données risquent d'être perdues !**
 
 SecureMover résout ce problème en déplaçant vos données vers une partition séparée (D:, E:, etc.) tout en maintenant la transparence pour Windows et vos applications.
+
+**💡 Cas d'usage populaires** : Libérer de l'espace sur C:, migration SSD, gestion multi-utilisateurs, entreprises, cybercafés, écoles...
+👉 **Voir tous les cas pratiques** : [CAS_USAGE.md](CAS_USAGE.md)
 
 ---
 
@@ -538,50 +545,65 @@ Utilisez le paramètre `-NoExit` :
 
 ---
 
+## 💡 Cas d'Usage Pratiques
+
+SecureMover est utilisé dans de nombreuses situations réelles ! Voici quelques exemples :
+
+### 🏠 Particuliers
+
+- **Disque C: saturé** → Libérez 50-200 Go en déplaçant vos profils vers D:
+- **Migration SSD** → Gardez Windows sur le SSD rapide, profils sur HDD spacieux
+- **Multi-utilisateurs** → Gérez facilement plusieurs profils familiaux
+
+### 🏢 Professionnels
+
+- **Entreprises** → Déploiement automatisé sur 50-500 PC via GPO/SCCM
+- **Cybercafés** → Gestion intelligente des profils clients temporaires
+- **Écoles** → Organisation des profils étudiants par semestre
+
+### 💻 IT & Développeurs
+
+- **Réparation PC** → Intervention rapide (30 min) sans réinstallation
+- **Environnements de test** → Profils isolés pour chaque environnement
+- **Optimisation** → Séparation code source (SSD) et dépendances (HDD)
+
+👉 **Découvrez tous les cas d'usage détaillés** : [CAS_USAGE.md](CAS_USAGE.md)
+
+**Bénéfices réels** :
+- 💾 Libération d'espace : +50 à +500 Go selon le profil
+- 💰 Économies : 0-500€ (évite achats SSD/disques)
+- ⚡ Gain de temps : 10 min vs 2-3h de réinstallation
+- 🔒 Sécurité : Sauvegarde automatique avant chaque opération
+
+---
+
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! Voici comment participer :
+Les contributions sont les bienvenues ! SecureMover est un projet **open-source**.
 
-### Rapporter un Bug
+👉 **Guide complet de contribution** : [CONTRIBUTING.md](CONTRIBUTING.md)
 
-1. Vérifiez que le bug n'a pas déjà été signalé dans les [Issues](https://github.com/DrSmoke/SecureMover/issues)
-2. Créez une nouvelle issue avec :
-   - Description détaillée du problème
-   - Étapes pour reproduire
-   - Version de Windows et PowerShell
-   - Fichier `SecureMover.log` si pertinent
-   - Captures d'écran si possible
+**En résumé** :
+1. 🍴 Fork le projet
+2. 🌿 Créez une branche (`git checkout -b feature/MaFonctionnalite`)
+3. ✍️ Commitez (`git commit -m 'feat: Ma fonctionnalité'`)
+4. 📤 Push (`git push origin feature/MaFonctionnalite`)
+5. 🔀 Ouvrez une Pull Request
 
-### Proposer une Amélioration
-
-1. Ouvrez une issue avec le tag `enhancement`
-2. Décrivez la fonctionnalité souhaitée
-3. Expliquez le cas d'usage
-
-### Soumettre un Pull Request
-
-1. Fork le projet
-2. Créez une branche (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez un Pull Request
-
-### Guidelines de Code
-
-- Utilisez des noms de variables explicites en français
-- Commentez les sections complexes
-- Testez sur Windows 10 et 11
-- Maintenez l'encodage UTF-8 with BOM
-- Suivez le style de code existant
+**Besoin d'aide ?** Contactez-moi sur WhatsApp : [+242 066 50 72 75](https://wa.me/242066507275)
 
 ---
 
 ## 👨‍💻 Auteurs
 
 **DrSmoke** - *"un mbokatier bien engagé"*
-- 💼 Développement principal
-- 🎨 Design de l'interface
-- 📖 Documentation
+- 💼 Développement principal et maintenance
+- 🎨 Design de l'interface (CLI + GUI)
+- 📖 Documentation complète
+- 📱 Contact WhatsApp : [+242 066 50 72 75](https://wa.me/242066507275)
+- 🌍 Basé au Congo 🇨🇬
+
+👉 **Plus d'infos** : [CONTACT.md](CONTACT.md)
 
 **Assistant IA (Claude Code)**
 - 🤖 Assistance au développement
@@ -652,11 +674,40 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 ---
 
-## 📞 Support
+## 📞 Contact & Support
 
+### 👨‍💻 Auteur
+
+**DrSmoke** - Développeur passionné par l'automatisation Windows
+
+### 💬 Me Contacter
+
+- 📱 **WhatsApp** : [+242 066 50 72 75](https://wa.me/242066507275)
 - 🐛 **Bugs** : [Ouvrir une issue](https://github.com/DrSmoke/SecureMover/issues)
 - 💬 **Questions** : [Discussions](https://github.com/DrSmoke/SecureMover/discussions)
 - 📧 **Email** : drsmoke@example.com
+
+**Langues** : Français 🇫🇷
+
+👉 **Plus d'infos** : Voir [CONTACT.md](CONTACT.md) pour tous les moyens de contact
+
+### 🤝 Contribuer
+
+SecureMover est **open-source** ! Vos contributions sont les bienvenues :
+
+- 🍴 **Fork** le projet sur GitHub
+- 🌿 **Créez** une branche pour votre fonctionnalité
+- ✍️ **Commitez** vos modifications
+- 📤 **Ouvrez** une Pull Request
+
+👉 **Guide complet** : [CONTRIBUTING.md](CONTRIBUTING.md)
+
+**Contributions acceptées** :
+- ✅ Corrections de bugs
+- ✅ Nouvelles fonctionnalités
+- ✅ Documentation et traductions
+- ✅ Amélioration UX/UI
+- ✅ Tests et rapports de bugs
 
 ---
 
