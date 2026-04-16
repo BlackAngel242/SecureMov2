@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     SecureMover v2.0.2 - Déplace les dossiers utilisateur Windows vers une autre partition.
 
@@ -19,8 +19,16 @@
 
 param(
     [switch]$NoExit,
-    [switch]$WhatIf
+    [switch]$WhatIf,
+    [switch]$Silent,
+    [string]$ProfileName = "",
+    [string]$DestinationDrive = "",
+    [ValidateSet("Move","Restore","Backup","")]
+    [string]$Action = ""
 )
+
+# Repertoire du script securise (fonctionne aussi via Executer avec PowerShell)
+$script:scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
 
 # -----------------------------------------------------------------------------------
 # --- CONFIGURATION UTF-8 AVEC BOM POUR CURSOR PRO
@@ -149,7 +157,7 @@ function Initialize-ExecutionEnvironment {
 }
 
 # Initialisation de l'environnement d'exécution
-$isModernTerminal = Initialize-ExecutionEnvironment
+Initialize-ExecutionEnvironment | Out-Null
 
 # -----------------------------------------------------------------------------------
 # --- CONTRÔLE DE LA TAILLE DE FENÊTRE POUR SECUREMOVER V2.0
@@ -692,7 +700,7 @@ function Write-Log {
 
     # Écriture dans le fichier log
     try {
-        $logPath = Join-Path -Path $PSScriptRoot -ChildPath "SecureMover.log"
+        $logPath = Join-Path -Path $script:scriptDir -ChildPath "SecureMover.log"
         $logMessage | Out-File -FilePath $logPath -Append -Encoding UTF8
     }
     catch {
@@ -769,7 +777,7 @@ function Select-DestinationDrive {
     Write-Host "Voici les partitions disponibles : $($drives -join ', ')" -ForegroundColor Green
     $destinationDrive = Read-Host "Veuillez entrer la lettre de la partition de destination (ex: D)"
 
-    if (-not ($drives -contains $destinationDrive)) {
+    if (-not ($drives -icontains $destinationDrive.ToUpper())) {
         Write-Log "ERREUR : Partition invalide sélectionnée: $destinationDrive" "ERROR"
         return $null
     }
@@ -815,7 +823,7 @@ function Backup-RegistrySettings {
     param([string]$RegistryPath)
 
     try {
-        $backupPath = Join-Path -Path $PSScriptRoot -ChildPath "SecureMover_Backup_$(Get-Date -Format 'yyyyMMdd_HHmmss').reg"
+        $backupPath = Join-Path -Path $script:scriptDir -ChildPath "SecureMover_Backup_$(Get-Date -Format 'yyyyMMdd_HHmmss').reg"
         $registryData = Get-ItemProperty -Path $RegistryPath -ErrorAction Stop
 
         $backupContent = "Windows Registry Editor Version 5.00`n`n"
@@ -991,8 +999,27 @@ if (-not (Test-AdminPrivileges)) {
         Start-Sleep -Seconds 3
         exit
     }
+}# -----------------------------------------------------------------------------------
+# --- PROTECTIOrn COrnTRE LES IrnSTArnCES SIMULTArnÉES (MUTEX)
+# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
+# --- PROTECTION CONTRE LES INSTANCES SIMULTANEES (MUTEX)
+# -----------------------------------------------------------------------------------
+$script:mutex = New-Object System.Threading.Mutex($false, "Global\SecureMover_Mutex")
+try {
+    if (-not $script:mutex.WaitOne(0)) {
+        Write-Host ""
+        Write-Host "================================================================" -ForegroundColor Red
+        Write-Host " [ERREUR] SecureMover est deja en cours d'execution !" -ForegroundColor Red
+        Write-Host "================================================================" -ForegroundColor Red
+        Write-Host " Veuillez fermer l'autre instance avant de relancer." -ForegroundColor Yellow
+        Write-Host ""
+        Start-Sleep -Seconds 4
+        exit 1
+    }
+} catch {
+    Write-Warning "Impossible de verifier les instances actives : $($_.Exception.Message)"
 }
-
 # Configuration de la fenêtre console
 Initialize-SecureMoverWindow -Width 85 -Height 45 -CenterWindow -TestDimensions
 
@@ -1272,19 +1299,32 @@ function Convert-ToLongPath {
 
 # Option 1: Déplacer un Profil Utilisateur
 function Move-UserProfile {
+    param(
+        [string]$SilentProfile = "",
+        [string]$SilentDrive = ""
+    )
     Show-SectionHeader "DÉPLACEMENT DE PROFIL UTILISATEUR"
 
-    # Sélection du profil
-    $selectedProfile = Select-UserProfile
-    if (-not $selectedProfile) {
-        return
+    # Sélection du profil (interactive ou silencieuse)
+    if ($SilentProfile) {
+        $allProfiles = Get-UserProfiles
+        $selectedProfile = $allProfiles | Where-Object { $_.Name -eq $SilentProfile } | Select-Object -First 1
+        if (-not $selectedProfile) {
+            Write-StatusMessage "Profil '$SilentProfile' introuvable." "Error"
+            return
+        }
+    } else {
+        $selectedProfile = Select-UserProfile
     }
+    if (-not $selectedProfile) { return }
 
-    # Sélection de la partition de destination
-    $destinationDrive = Select-DestinationDrive
-    if (-not $destinationDrive) {
-        return
+    # Sélection du drive (interactive ou silencieuse)
+    if ($SilentDrive) {
+        $destinationDrive = $SilentDrive
+    } else {
+        $destinationDrive = Select-DestinationDrive
     }
+    if (-not $destinationDrive) { return }
 
     $destinationPath = "${destinationDrive}:\Users\$($selectedProfile.Name)"
 
@@ -1322,6 +1362,14 @@ function Move-UserProfile {
     Write-StatusMessage "Création de la sauvegarde du registre..." "Progress"
     Show-LoadingAnimation -Message "Sauvegarde du registre" -Duration 2
     $registryBackupPath = Backup-RegistrySettings -RegistryPath 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
+
+    # ------------------------------------------------------------------
+    # Journal transactionnel : permet le rollback automatique en cas d'echec
+    # ------------------------------------------------------------------
+    $transaction = @{
+        MovedFolders    = [System.Collections.Generic.List[hashtable]]::new()
+        RegistryChanges = [System.Collections.Generic.List[hashtable]]::new()
+    }
 
     try {
         # Création du dossier parent de destination
@@ -1387,11 +1435,21 @@ function Move-UserProfile {
                 Write-StatusMessage "Déplacement de $folder vers $destFullPath" "Progress"
 
                 # Utilisation de Robocopy pour un déplacement robuste (PATCH BUG-003: Support chemins longs)
-                $robocopyResult = robocopy (Convert-ToLongPath $sourceFullPath) (Convert-ToLongPath $destFullPath) /E /MOVE /NJH /NJS
+                robocopy (Convert-ToLongPath $sourceFullPath) (Convert-ToLongPath $destFullPath) /E /MOVE /NJH /NJS | Out-Null
                 $exitCode = $LASTEXITCODE
 
                 if ($exitCode -le 7) {
                     Write-StatusMessage "Déplacement réussi de $folder (Code: $exitCode)" "Success"
+
+                    # Enregistrer dans le journal transactionnel (rollback possible)
+                    $transaction.MovedFolders.Add(@{
+                        Name   = $folder
+                        Source = $sourceFullPath
+                        Dest   = $destFullPath
+                    })
+
+                    # Lire l'ancienne valeur du registre AVANT de la modifier
+                    $oldRegValue = (Get-ItemProperty -Path $registryPath -Name $foldersToMove[$folder] -ErrorAction SilentlyContinue).$($foldersToMove[$folder])
 
                     # Mise à jour du Registre
                     try {
@@ -1401,6 +1459,15 @@ function Move-UserProfile {
                         $newValue = Get-ItemProperty -Path $registryPath -Name $foldersToMove[$folder] -ErrorAction SilentlyContinue
                         if ($newValue -and $newValue.$($foldersToMove[$folder]) -eq $destFullPath) {
                             Write-StatusMessage "Mise à jour du registre pour $folder - SUCCESS" "Success"
+
+                            # Enregistrer le changement de registre dans le journal transactionnel
+                            $transaction.RegistryChanges.Add(@{
+                                RegPath  = $registryPath
+                                RegName  = $foldersToMove[$folder]
+                                OldValue = $oldRegValue
+                                NewValue = $destFullPath
+                            })
+
                             $movedFolders += $folder
                         } else {
                             Write-StatusMessage "Mise à jour du registre pour $folder - WARNING (vérification échouée)" "Warning"
@@ -1408,9 +1475,11 @@ function Move-UserProfile {
                     }
                     catch {
                         Write-StatusMessage "Erreur lors de la mise a jour du registre pour ${folder}: $($_.Exception.Message)" "Error"
+                        throw  # Propager pour déclencher le rollback
                     }
                 } else {
                     Write-StatusMessage "Erreur lors du déplacement de $folder (Code: $exitCode)" "Error"
+                    throw "Robocopy a échoué pour $folder (Code: $exitCode)"
                 }
             } else {
                 Write-StatusMessage "Dossier source inexistant: $sourceFullPath" "Warning"
@@ -1447,13 +1516,78 @@ function Move-UserProfile {
         Write-StatusMessage "ERREUR CRITIQUE: $($_.Exception.Message)" "Error"
         Show-ErrorDialog -ErrorMessage $_.Exception.Message -Suggestion "Vérifiez les permissions et l'espace disque disponible"
 
-        if ($registryBackupPath) {
+        # ------------------------------------------------------------------
+        # ROLLBACK AUTOMATIQUE (pattern transactionnel)
+        # Remet le système dans l'état initial si l'opération a échoué
+        # ------------------------------------------------------------------
+        if ($transaction.MovedFolders.Count -gt 0 -or $transaction.RegistryChanges.Count -gt 0) {
             Write-Host ""
-            $restoreChoice = Read-Host "Voulez-vous restaurer le registre ? (O/N)"
+            Write-StatusMessage "ROLLBACK AUTOMATIQUE EN COURS..." "Warning"
+            Write-Host "Le systeme va etre remis dans son etat initial." -ForegroundColor Yellow
+
+            $rollbackErrors = 0
+
+            # 1. Restaurer les dossiers déplacés (dans l'ordre inverse)
+            $foldersToRollback = [System.Linq.Enumerable]::Reverse($transaction.MovedFolders)
+            foreach ($entry in $foldersToRollback) {
+                if (Test-Path -Path $entry.Dest) {
+                    Write-StatusMessage "Rollback de $($entry.Name) : $($entry.Dest) -> $($entry.Source)" "Progress"
+                    robocopy (Convert-ToLongPath $entry.Dest) (Convert-ToLongPath $entry.Source) /E /MOVE /NJH /NJS | Out-Null
+                    if ($LASTEXITCODE -le 7) {
+                        Write-StatusMessage "Rollback de $($entry.Name) : OK" "Success"
+                    } else {
+                        Write-StatusMessage "Rollback de $($entry.Name) : ECHEC (Code: $LASTEXITCODE)" "Error"
+                        $rollbackErrors++
+                    }
+                }
+            }
+
+            # 2. Restaurer les clés de registre modifiées (dans l'ordre inverse)
+            $registryToRollback = [System.Linq.Enumerable]::Reverse($transaction.RegistryChanges)
+            foreach ($entry in $registryToRollback) {
+                try {
+                    if ($null -ne $entry.OldValue) {
+                        Set-ItemProperty -Path $entry.RegPath -Name $entry.RegName -Value $entry.OldValue -ErrorAction Stop
+                        Write-StatusMessage "Registre restaure : $($entry.RegName)" "Success"
+                    }
+                } catch {
+                    Write-StatusMessage "Echec restauration registre $($entry.RegName): $($_.Exception.Message)" "Error"
+                    $rollbackErrors++
+                }
+            }
+
+            # 3. Rapport de rollback
+            Write-Host ""
+            if ($rollbackErrors -eq 0) {
+                Show-InfoBox -Lines @(
+                    "$($script:icons.success) ROLLBACK REUSSI",
+                    "",
+                    "Le systeme a ete remis dans son etat initial.",
+                    "Aucune modification permanente n'a ete appliquee.",
+                    "",
+                    "Verifiez vos dossiers et relancez l'operation."
+                ) -BorderColor "Green"
+            } else {
+                Show-InfoBox -Lines @(
+                    "$($script:icons.warn) ROLLBACK PARTIEL ($rollbackErrors erreur(s))",
+                    "",
+                    "Certains elements n'ont pas pu etre restaures automatiquement.",
+                    "Utilisez le fichier de sauvegarde : $registryBackupPath",
+                    "",
+                    "Commande de restauration manuelle du registre :",
+                    "  regedit /s `"$registryBackupPath`""
+                ) -BorderColor "Yellow"
+            }
+        } elseif ($registryBackupPath) {
+            # Aucun fichier déplacé mais registre sauvegardé — proposer restauration manuelle
+            Write-Host ""
+            $restoreChoice = Read-Host "Voulez-vous restaurer le registre manuellement ? (O/N)"
             if ($restoreChoice -eq 'O') {
                 Restore-RegistrySettings -BackupPath $registryBackupPath
             }
         }
+
+        Write-Log "Opération échouée. Rollback effectué ($($transaction.MovedFolders.Count) dossiers)." "ERROR"
     }
 }
 
@@ -1509,7 +1643,7 @@ function Restore-UserProfile {
     $selectedProfile = $movedProfiles[$index]
 
     # Recherche du fichier de sauvegarde du registre
-    $backupFiles = Get-ChildItem -Path $PSScriptRoot -Filter "SecureMover_Backup_*.reg" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
+    $backupFiles = Get-ChildItem -Path $script:scriptDir -Filter "SecureMover_Backup_*.reg" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
 
     # Confirmation avec récapitulatif
     Show-InfoBox -Lines @(
@@ -1584,7 +1718,7 @@ function Restore-UserProfile {
             if (Test-Path -Path $sourcePath) {
                 Write-StatusMessage "Restauration de $folder..." "Progress"
                 # PATCH BUG-003: Support chemins longs
-                $robocopyResult = robocopy (Convert-ToLongPath $sourcePath) (Convert-ToLongPath $destPath) /E /MOVE /NJH /NJS
+                robocopy (Convert-ToLongPath $sourcePath) (Convert-ToLongPath $destPath) /E /MOVE /NJH /NJS | Out-Null
                 $exitCode = $LASTEXITCODE
 
                 if (Handle-RobocopyResult -ExitCode $exitCode -FolderName $folder -Operation "restauration") {
@@ -1757,7 +1891,7 @@ function Backup-UserProfile {
                 Write-StatusMessage "Sauvegarde de $folder..." "Progress"
 
                 # Utilisation de robocopy en mode copie (pas de déplacement) - PATCH BUG-003: Support chemins longs
-                $robocopyResult = robocopy (Convert-ToLongPath $sourcePath) (Convert-ToLongPath $destPath) /E /COPY:DAT /R:3 /W:1 /NJH /NJS
+                robocopy (Convert-ToLongPath $sourcePath) (Convert-ToLongPath $destPath) /E /COPY:DAT /R:3 /W:1 /NJH /NJS | Out-Null
                 $exitCode = $LASTEXITCODE
 
                 if (Handle-RobocopyResult -ExitCode $exitCode -FolderName $folder -Operation "sauvegarde") {
@@ -1818,6 +1952,16 @@ l'option 'Restaurer un Profil' du script SecureMover.
 # -----------------------------------------------------------------------------------
 
 do {
+    # Mode silencieux (appele depuis la GUI)
+    if ($Silent -and $ProfileName -and $DestinationDrive -and $Action) {
+        switch ($Action) {
+            "Move"    { Move-UserProfile -SilentProfile $ProfileName -SilentDrive $DestinationDrive }
+            "Restore" { Restore-UserProfile -SilentProfile $ProfileName }
+            "Backup"  { Backup-UserProfile -SilentProfile $ProfileName -SilentDrive $DestinationDrive }
+        }
+        exit 0
+    }
+
     Show-MainMenu
     $choice = Get-MenuChoice
 
@@ -1842,6 +1986,12 @@ do {
         Clear-Host
     }
 } while ($choice -ne '5')
+
+# Liberation du mutex
+if ($script:mutex) {
+    try { $script:mutex.ReleaseMutex() } catch {}
+    $script:mutex.Dispose()
+}
 
 # Restauration de la fenêtre console (optionnel)
 if ($PSVersionTable.PSVersion.Major -le 5) {

@@ -345,7 +345,7 @@ PS2EXE convertit les scripts PowerShell en executables .exe :
 - **Documentation Complete** : ../README.md
 - **Documentation GUI** : ../README_GUI.md
 - **Bugs** : ../BUGS.md
-- **GitHub Issues** : https://github.com/DrSmoke/SecureMover/issues
+- **GitHub Issues** : https://github.com/BlackAngel242/SecureMov2/issues
 
 ---
 

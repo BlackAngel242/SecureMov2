@@ -36,7 +36,7 @@ En participant à ce projet, vous acceptez de maintenir un environnement respect
 
 ```bash
 # Cliquez sur "Fork" sur GitHub ou :
-git clone https://github.com/DrSmoke/SecureMover.git
+git clone https://github.com/BlackAngel242/SecureMov2.git
 cd SecureMover
 ```
 
@@ -93,7 +93,7 @@ git push origin feature/ma-fonctionnalite
 
 ### 6. Ouvrez une Pull Request
 
-1. Allez sur https://github.com/DrSmoke/SecureMover
+1. Allez sur https://github.com/BlackAngel242/SecureMov2
 2. Cliquez sur "New Pull Request"
 3. Sélectionnez votre branche
 4. Remplissez le template de PR (voir ci-dessous)
@@ -103,13 +103,13 @@ git push origin feature/ma-fonctionnalite
 ## 🐛 Signaler un Bug
 
 **Avant de signaler** :
-1. ✅ Vérifiez que le bug n'est pas déjà signalé dans [Issues](https://github.com/DrSmoke/SecureMover/issues)
+1. ✅ Vérifiez que le bug n'est pas déjà signalé dans [Issues](https://github.com/BlackAngel242/SecureMov2/issues)
 2. ✅ Assurez-vous d'utiliser la dernière version
 3. ✅ Testez avec une installation propre si possible
 
 **Créer un rapport de bug** :
 
-Allez sur [Issues](https://github.com/DrSmoke/SecureMover/issues/new) et utilisez ce template :
+Allez sur [Issues](https://github.com/BlackAngel242/SecureMov2/issues/new) et utilisez ce template :
 
 ```markdown
 **Description du Bug**
@@ -152,7 +152,7 @@ Toute autre information pertinente.
 
 **Avant de proposer** :
 1. ✅ Vérifiez que la fonctionnalité n'existe pas déjà
-2. ✅ Consultez les [Issues](https://github.com/DrSmoke/SecureMover/issues) pour éviter les doublons
+2. ✅ Consultez les [Issues](https://github.com/BlackAngel242/SecureMov2/issues) pour éviter les doublons
 3. ✅ Réfléchissez à l'utilité pour la communauté
 
 **Template de proposition** :
@@ -363,12 +363,12 @@ net user TestSecureMover P@ssw0rd123 /add
 
 ### Où Discuter ?
 
-**GitHub Discussions** : https://github.com/DrSmoke/SecureMover/discussions
+**GitHub Discussions** : https://github.com/BlackAngel242/SecureMov2/discussions
 - Questions générales
 - Partage d'expériences
 - Tutoriels
 
-**WhatsApp** : +242 066 50 72 75
+**
 - Contact direct avec DrSmoke
 - Support urgent
 

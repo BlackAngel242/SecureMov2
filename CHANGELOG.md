@@ -248,9 +248,8 @@ et ce projet respecte le [Versionnage Semantique](https://semver.org/lang/fr/).
 
 ## Support & Contact
 
-- **Issues** : https://github.com/DrSmoke/SecureMover/issues
-- **Discussions** : https://github.com/DrSmoke/SecureMover/discussions
-- **Email** : smokesama242@gmail.com
+- **Issues** : https://github.com/BlackAngel242/SecureMov2/issues
+- **Discussions** : https://github.com/BlackAngel242/SecureMov2/discussions
 
 ---
 

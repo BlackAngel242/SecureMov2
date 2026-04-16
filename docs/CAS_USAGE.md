@@ -420,7 +420,7 @@ SecureMover-GUI.exe -UserName "TestEnv1" -NewPath "E:\TestProfiles"
 ### 📚 Besoin d'Aide ?
 
 - 📖 **Documentation complète** : `README.md`
-- 💬 **Contact direct** : WhatsApp +242 066 50 72 75
+- 💬 **Contact direct** : 
 - 🐛 **Signaler un bug** : GitHub Issues
 - 🤝 **Contribuer** : `CONTRIBUTING.md`
 
@@ -438,9 +438,9 @@ SecureMover a déjà aidé **des centaines d'utilisateurs** à :
 ---
 
 **Auteur** : DrSmoke
-**Contact** : WhatsApp +242 066 50 72 75
+**Contact** : 
 **Licence** : MIT (Libre et Gratuit)
-**GitHub** : https://github.com/DrSmoke/SecureMover
+**GitHub** : https://github.com/BlackAngel242/SecureMov2
 
 ---
 

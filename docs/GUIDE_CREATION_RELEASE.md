@@ -123,8 +123,8 @@ Get-FileHash SecureMover-GUI.exe -Algorithm SHA256
 
 ## 📞 Support
 
-- 📱 **WhatsApp** : [+242 066 50 72 75](https://wa.me/242066507275)
-- 📧 **Email** : smokesama242@gmail.com
+- 📱 **)
+- 📧 **Email** : [GitHub Issues](https://github.com/BlackAngel242/SecureMov2/issues)
 - 🐛 **Issues** : [GitHub Issues](https://github.com/BlackAngel242/SecureMov2/issues)
 
 **Langue** : Français 🇫🇷

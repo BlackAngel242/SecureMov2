@@ -460,14 +460,14 @@ Lors de l'utilisation du script, les fichiers suivants sont crees :
 
 **DrSmoke** - "un mbokatier bien engage"
 - GitHub : https://github.com/DrSmoke
-- Email : smokesama242@gmail.com
+- Email : [GitHub Issues](https://github.com/BlackAngel242/SecureMov2/issues)
 
 ### Projet
 
-- **Repository** : https://github.com/DrSmoke/SecureMover
-- **Issues** : https://github.com/DrSmoke/SecureMover/issues
-- **Discussions** : https://github.com/DrSmoke/SecureMover/discussions
-- **Releases** : https://github.com/DrSmoke/SecureMover/releases
+- **Repository** : https://github.com/BlackAngel242/SecureMov2
+- **Issues** : https://github.com/BlackAngel242/SecureMov2/issues
+- **Discussions** : https://github.com/BlackAngel242/SecureMov2/discussions
+- **Releases** : https://github.com/BlackAngel242/SecureMov2/releases
 
 ---
 

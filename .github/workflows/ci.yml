@@ -1,0 +1,66 @@
+name: CI — SecureMover
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  analyze:
+    name: PSScriptAnalyzer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Run PSScriptAnalyzer on CLI
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path SecureMover.ps1 -Severity Error,Warning
+          if ($results) {
+            $results | Format-List
+            Write-Error "PSScriptAnalyzer found $($results.Count) issue(s)"
+            exit 1
+          }
+          Write-Host "PSScriptAnalyzer: No issues found" -ForegroundColor Green
+
+      - name: Run PSScriptAnalyzer on GUI
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path SecureMover-GUI.ps1 -Severity Error,Warning
+          if ($results) {
+            $results | Format-List
+            Write-Error "PSScriptAnalyzer found $($results.Count) issue(s)"
+            exit 1
+          }
+          Write-Host "PSScriptAnalyzer: No issues found" -ForegroundColor Green
+
+  test:
+    name: Pester Tests
+    runs-on: windows-latest
+    needs: analyze
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Pester
+        shell: pwsh
+        run: Install-Module -Name Pester -Force -Scope CurrentUser -MinimumVersion 5.0
+
+      - name: Run Tests
+        shell: pwsh
+        run: |
+          if (Test-Path tests/SecureMover.Tests.ps1) {
+            $config = New-PesterConfiguration
+            $config.Run.Path = "tests/SecureMover.Tests.ps1"
+            $config.Output.Verbosity = "Detailed"
+            $config.TestResult.Enabled = $true
+            $config.TestResult.OutputPath = "TestResults.xml"
+            $result = Invoke-Pester -Configuration $config
+            if ($result.FailedCount -gt 0) { exit 1 }
+          } else {
+            Write-Host "No tests found — skipping" -ForegroundColor Yellow
+          }

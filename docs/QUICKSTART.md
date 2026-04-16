@@ -167,6 +167,6 @@ Après votre première utilisation :
 
 *En cas de doute, consultez la documentation complète.*
 
-[📖 README Complet](README.md) | [🐛 Rapporter un Bug](https://github.com/DrSmoke/SecureMover/issues)
+[📖 README Complet](README.md) | [🐛 Rapporter un Bug](https://github.com/BlackAngel242/SecureMov2/issues)
 
 </div>

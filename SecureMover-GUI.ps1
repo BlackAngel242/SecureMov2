@@ -474,7 +474,7 @@ $MoveButton_Click = {
     try {
         if ($ProfileComboBox.SelectedIndex -eq -1 -or $DriveComboBox.SelectedIndex -eq -1) {
             [System.Windows.MessageBox]::Show(
-                "Veuillez selectionner un profil et un disque de destination.`n`nUtilisez les listes deroulantes ci-dessus.",
+                "Veuillez selectionner un profil et un disque de destination.",
                 "Selection Requise",
                 [System.Windows.MessageBoxButton]::OK,
                 [System.Windows.MessageBoxImage]::Warning
@@ -482,92 +482,101 @@ $MoveButton_Click = {
             return
         }
 
-        $selectedProfile = $ProfileComboBox.SelectedItem
-        $selectedDrive = $DriveComboBox.SelectedItem
+        $selectedProfileDisplay = $ProfileComboBox.SelectedItem
+        $profileName = ($selectedProfileDisplay -split " - ")[0].Trim()
+
+        $selectedDriveDisplay = $DriveComboBox.SelectedItem
+        $driveLetter = ($selectedDriveDisplay -split ":")[0].Trim()
 
         $result = [System.Windows.MessageBox]::Show(
-            "ATTENTION : Cette operation va deplacer le profil utilisateur selectionne.`n`n" +
-            "Profil   : $selectedProfile`n" +
-            "Vers     : $selectedDrive`n`n" +
-            "Cette action est IRREVERSIBLE sans la fonction RESTAURER.`n`n" +
+            "ATTENTION : Cette operation va DEPLACER le profil utilisateur.`n`n" +
+            "Profil   : $profileName`n" +
+            "Vers     : ${driveLetter}:\`n`n" +
             "Un redemarrage sera necessaire apres l'operation.`n`n" +
-            "Voulez-vous continuer ?",
-            "Confirmation Requise - Operation Critique",
+            "Etes-vous certain de vouloir continuer ?",
+            "Confirmation Requise",
             [System.Windows.MessageBoxButton]::YesNo,
             [System.Windows.MessageBoxImage]::Warning
         )
 
         if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
             Write-GUILog "================================================" "Info"
-            Write-GUILog "DEPLACEMENT DE PROFIL - OPERATION DEMARREE" "Info"
+            Write-GUILog "DEPLACEMENT DE PROFIL - OPERATION REELLE" "Info"
             Write-GUILog "================================================" "Info"
-            Write-GUILog "Profil      : $selectedProfile" "Info"
-            Write-GUILog "Destination : $selectedDrive" "Info"
-            Write-GUILog "" "Info"
+            Write-GUILog "Profil      : $profileName" "Info"
+            Write-GUILog "Destination : ${driveLetter}:\" "Info"
 
-            Show-Progress -Percent 0 -Status "Preparation du deplacement..."
+            $window.Dispatcher.Invoke([action]{
+                $MoveButton.IsEnabled = $false
+                $RestoreButton.IsEnabled = $false
+                $BackupButton.IsEnabled = $false
+            })
 
-            # SIMULATION - A CONNECTER AU BACKEND CLI DANS v2.0.3-GUI
-            Write-GUILog "Verification de l'espace disque..." "Info"
-            Start-Sleep -Milliseconds 500
-            Show-Progress -Percent 10 -Status "Verification espace disque..."
+            Show-Progress -Percent 10 -Status "Lancement de l'operation..."
 
-            Write-GUILog "Espace disque : OK (suffisant)" "Success"
-            Start-Sleep -Milliseconds 300
+            $cliPath = Join-Path $scriptPath "SecureMover.ps1"
+            $job = Start-Job -ScriptBlock {
+                param($sp, $pn, $dd)
+                & powershell.exe -ExecutionPolicy Bypass -File $sp `
+                    -Silent -ProfileName $pn -DestinationDrive $dd -Action Move -NoExit
+            } -ArgumentList $cliPath, $profileName, $driveLetter
 
-            Write-GUILog "Sauvegarde du registre Windows..." "Info"
-            Show-Progress -Percent 20 -Status "Sauvegarde registre..."
-            Start-Sleep -Milliseconds 800
-            Write-GUILog "Sauvegarde registre : OK" "Success"
+            $timer = New-Object System.Windows.Threading.DispatcherTimer
+            $timer.Interval = [TimeSpan]::FromSeconds(1)
+            $timer.Add_Tick({
+                if ($job.State -eq "Running") {
+                    $output = Receive-Job $job -Keep
+                    if ($output) {
+                        foreach ($line in $output) {
+                            Write-GUILog "$line" "Info"
+                        }
+                    }
+                    $pct = $ProgressBar.Value + 5
+                    if ($pct -gt 90) { $pct = 90 }
+                    Show-Progress -Percent $pct -Status "Operation en cours..."
+                } else {
+                    $timer.Stop()
+                    $output = Receive-Job $job
+                    Remove-Job $job -Force
 
-            $folders = @("Desktop", "Documents", "Downloads", "Music", "Pictures", "Videos")
-            $step = 0
-            foreach ($folder in $folders) {
-                $step++
-                $percent = 20 + ($step * 60 / $folders.Count)
-                Write-GUILog "Deplacement de $folder..." "Info"
-                Show-Progress -Percent $percent -Status "Deplacement de $folder..."
-                Start-Sleep -Milliseconds 600
-                Write-GUILog "Deplacement de $folder : OK" "Success"
-            }
+                    Show-Progress -Percent 100 -Status "Operation terminee !"
+                    Start-Sleep -Milliseconds 500
+                    Hide-Progress
 
-            Show-Progress -Percent 90 -Status "Mise a jour du registre..."
-            Write-GUILog "Mise a jour du registre Windows..." "Info"
-            Start-Sleep -Milliseconds 500
-            Write-GUILog "Registre Windows mis a jour : OK" "Success"
+                    $window.Dispatcher.Invoke([action]{
+                        $MoveButton.IsEnabled = $true
+                        $RestoreButton.IsEnabled = $true
+                        $BackupButton.IsEnabled = $true
+                    })
 
-            Show-Progress -Percent 100 -Status "Operation terminee !"
-            Start-Sleep -Milliseconds 300
+                    Write-GUILog "================================================" "Success"
+                    Write-GUILog "OPERATION TERMINEE !" "Success"
+                    Write-GUILog "================================================" "Success"
+                    Write-GUILog "IMPORTANT : Redemarrez votre PC pour finaliser." "Warning"
 
-            Hide-Progress
-            Write-GUILog "" "Info"
-            Write-GUILog "================================================" "Success"
-            Write-GUILog "DEPLACEMENT TERMINE AVEC SUCCES !" "Success"
-            Write-GUILog "================================================" "Success"
-            Write-GUILog "" "Info"
-            Write-GUILog "ATTENTION : Un redemarrage est FORTEMENT RECOMMANDE" "Warning"
-            Write-GUILog "" "Info"
-
-            [System.Windows.MessageBox]::Show(
-                "Le profil a ete deplace avec succes !`n`n" +
-                "IMPORTANT : Un redemarrage du systeme est fortement recommande.`n`n" +
-                "Souhaitez-vous redemarrer maintenant ?`n" +
-                "(Cliquez Non pour redemarrer plus tard)",
-                "Operation Reussie",
-                [System.Windows.MessageBoxButton]::YesNo,
-                [System.Windows.MessageBoxImage]::Information
-            ) | Out-Null
-        }
-        else {
-            Write-GUILog "Operation annulee par l'utilisateur" "Warning"
+                    [System.Windows.MessageBox]::Show(
+                        "Operation terminee !`n`nIMPORTANT : Un redemarrage est recommande.",
+                        "Operation Terminee",
+                        [System.Windows.MessageBoxButton]::OK,
+                        [System.Windows.MessageBoxImage]::Information
+                    ) | Out-Null
+                }
+            })
+            $timer.Start()
+        } else {
+            Write-GUILog "Operation annulee par l'utilisateur." "Warning"
         }
     }
     catch {
         Hide-Progress
+        $window.Dispatcher.Invoke([action]{
+            $MoveButton.IsEnabled = $true
+            $RestoreButton.IsEnabled = $true
+            $BackupButton.IsEnabled = $true
+        })
         Write-GUILog "ERREUR CRITIQUE : $_" "Error"
         [System.Windows.MessageBox]::Show(
-            "Une erreur est survenue pendant l'operation :`n`n$_`n`n" +
-            "Consultez le journal pour plus de details.",
+            "Une erreur est survenue :`n`n$_",
             "Erreur",
             [System.Windows.MessageBoxButton]::OK,
             [System.Windows.MessageBoxImage]::Error
@@ -576,27 +585,83 @@ $MoveButton_Click = {
 }
 
 $RestoreButton_Click = {
-    Write-GUILog "Fonction RESTAURER - En developpement" "Warning"
-    [System.Windows.MessageBox]::Show(
-        "La fonction RESTAURER sera disponible dans la version v2.0.3-GUI.`n`n" +
-        "Cette fonction permettra de restaurer un profil precedemment deplace vers son emplacement d'origine.`n`n" +
-        "Pour l'instant, utilisez le script CLI (SecureMover.ps1) pour cette operation.",
-        "Fonction en Developpement",
-        [System.Windows.MessageBoxButton]::OK,
-        [System.Windows.MessageBoxImage]::Information
-    )
+    try {
+        if ($ProfileComboBox.SelectedIndex -eq -1) {
+            [System.Windows.MessageBox]::Show(
+                "Veuillez selectionner un profil a restaurer.",
+                "Selection Requise",
+                [System.Windows.MessageBoxButton]::OK,
+                [System.Windows.MessageBoxImage]::Warning
+            )
+            return
+        }
+
+        $selectedProfileDisplay = $ProfileComboBox.SelectedItem
+        $profileName = ($selectedProfileDisplay -split " - ")[0].Trim()
+
+        $result = [System.Windows.MessageBox]::Show(
+            "Restaurer le profil '$profileName' vers C:\Users ?`n`n" +
+            "Cette operation remet les dossiers a leur emplacement d'origine.`n`n" +
+            "Continuer ?",
+            "Confirmation Restauration",
+            [System.Windows.MessageBoxButton]::YesNo,
+            [System.Windows.MessageBoxImage]::Question
+        )
+
+        if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
+            Write-GUILog "RESTAURATION - Profil : $profileName" "Info"
+            $sp = Join-Path $scriptPath "SecureMover.ps1"
+            Start-Job -ScriptBlock {
+                param($s, $p)
+                & powershell.exe -ExecutionPolicy Bypass -File $s -Silent -ProfileName $p -Action Restore
+            } -ArgumentList $sp, $profileName | Out-Null
+            Write-GUILog "Restauration lancee en arriere-plan. Consultez SecureMover.log." "Info"
+        }
+    }
+    catch {
+        Write-GUILog "ERREUR : $_" "Error"
+    }
 }
 
 $BackupButton_Click = {
-    Write-GUILog "Fonction SAUVEGARDER - En developpement" "Warning"
-    [System.Windows.MessageBox]::Show(
-        "La fonction SAUVEGARDER sera disponible dans la version v2.0.3-GUI.`n`n" +
-        "Cette fonction permettra de creer une copie de sauvegarde du profil sur un support externe.`n`n" +
-        "Pour l'instant, utilisez le script CLI (SecureMover.ps1) pour cette operation.",
-        "Fonction en Developpement",
-        [System.Windows.MessageBoxButton]::OK,
-        [System.Windows.MessageBoxImage]::Information
-    )
+    try {
+        if ($ProfileComboBox.SelectedIndex -eq -1 -or $DriveComboBox.SelectedIndex -eq -1) {
+            [System.Windows.MessageBox]::Show(
+                "Veuillez selectionner un profil et un disque de destination.",
+                "Selection Requise",
+                [System.Windows.MessageBoxButton]::OK,
+                [System.Windows.MessageBoxImage]::Warning
+            )
+            return
+        }
+
+        $selectedProfileDisplay = $ProfileComboBox.SelectedItem
+        $profileName = ($selectedProfileDisplay -split " - ")[0].Trim()
+        $selectedDriveDisplay = $DriveComboBox.SelectedItem
+        $driveLetter = ($selectedDriveDisplay -split ":")[0].Trim()
+
+        $result = [System.Windows.MessageBox]::Show(
+            "Sauvegarder le profil '$profileName' vers ${driveLetter}:\ ?`n`n" +
+            "Cette operation copie vos fichiers SANS modifier le systeme.`n`n" +
+            "Continuer ?",
+            "Confirmation Sauvegarde",
+            [System.Windows.MessageBoxButton]::YesNo,
+            [System.Windows.MessageBoxImage]::Question
+        )
+
+        if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
+            Write-GUILog "SAUVEGARDE - Profil : $profileName vers ${driveLetter}:\" "Info"
+            $sp = Join-Path $scriptPath "SecureMover.ps1"
+            Start-Job -ScriptBlock {
+                param($s, $p, $d)
+                & powershell.exe -ExecutionPolicy Bypass -File $s -Silent -ProfileName $p -DestinationDrive $d -Action Backup
+            } -ArgumentList $sp, $profileName, $driveLetter | Out-Null
+            Write-GUILog "Sauvegarde lancee en arriere-plan. Consultez SecureMover.log." "Info"
+        }
+    }
+    catch {
+        Write-GUILog "ERREUR : $_" "Error"
+    }
 }
 
 $WhatIfButton_Click = {
